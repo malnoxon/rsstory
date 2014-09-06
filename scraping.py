@@ -79,7 +79,7 @@ def feature(url):
             'other': freq(fv, Feature.other),
             'url': url}
 
-def scrape3(url):
+def scrape(url):
     arst = set([])
     r = http.request('GET', url)
     soup = BeautifulSoup(r.data)
