@@ -18,7 +18,7 @@ email  = Input.input Field.noContent
 remail = Input.input Field.noContent
 submit = Input.input ()
 
-hasAttempted : Signal Bool
+XhasAttempted : Signal Bool
 hasAttempted =
     let isPositive c = c > 0
     in  isPositive <~ count submit.signal
@@ -28,7 +28,7 @@ sendable = keepWhen hasAttempted False (isEmpty <~ errors)
 
 errors : Signal [String]
 errors =
-    let rawErrors = lift2 getErrors first.signal last.signal 
+    let rawErrors = lift2 getErrors first.signal last.signal
     in  keepWhen hasAttempted [] <| merge rawErrors (sampleOn submit.signal rawErrors)
 
 getErrors : Field.Content -> Field.Content -> [String]
@@ -46,14 +46,14 @@ port redirect =
     let f = first.signal
     in
       keepWhen sendable "" <| sampleOn submit.signal <| lift (\x -> x.string) f
-    
-    
+
+
 --url : Field.Constent -> String
 
 responses : Signal (Http.Response String)
-responses = 
+responses =
       Http.send (lift2 (\x y -> Http.post  "http://127.0.0.1:8000/pyrss2gen.xml" (x.string ++ " " ++ y.string))  first.signal last.signal)
-    
+
 
 
 --url : Field.Content -> Field.Content -> Field.Content -> String
@@ -98,4 +98,3 @@ showErrors errs =
         then spacer 0 0
         else flow down <| map (width 340 . centered . Text.color red . toText) errs
     ]
-
