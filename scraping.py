@@ -1,6 +1,11 @@
-import urllib3, re, pdb
+import urllib3, re, pdb, arrow, itertools
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 http = urllib3.PoolManager()
 
@@ -27,13 +32,17 @@ def firstMatchingID(soup, reg):
 def containsDate(strng):
     if isinstance(strng, list):
         return any(map(lambda x: containsDate(x), strng))
-    match = False
     if isinstance(strng, str):
-        strng = strng.lower()
-        for i in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
-                  'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'november', 'december']:
-            match = match or not strng.find(i) == -1
-    return match
+        template = ["YYYY-MM-DD","YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D", "dddd-MMM-YYYY",
+                    "dddd-MMMM-YYYY", "MMMM-dddd-YYYY", "MMMM-DD-YYYY", "YYYY-MMMM", "YYYY-MMM", "YYYY-MM",
+                    'YYYY', 'MMMM', "MMM"]
+        for i in template:
+            try:
+                arrow.get(strng, i)
+                return True
+            except Exception:
+                pass
+    return False
 def dictContainsDate(dic):
     match = False
     for i in dic.values():
@@ -43,9 +52,35 @@ def isRelativeLink(st):
     return urlparse(st).netloc == '' and not urlparse(st).path == ''
 def isAbsoluteLink(st):
     return not urlparse(st).netloc == ''
+def tests():
+    urls = [("http://freegamer.blogspot.com/",),
+            ("http://www.mode7games.com/blog/",),
+            ("http://xkcd.com/archive/",),
+            "http://www.joelonsoftware.com/backIssues-2000-03.html"]
+
+class Feature():
+    number = 0
+    word = 1
+    other = 2
+def classify(chunk):
+    if chunk.isalpha():
+        return Feature.word
+    elif chunk.isdigit():
+        return Feature.number
+    return Feature.other
+def freq(array, num):
+    return sum([1 for i in array if i == num])
+def feature(url):
+    fv = re.split(re.compile('[-_/.//]'), url)
+    fv = filter(lambda x: not x == '', fv)
+    fv = map(lambda x: classify(x), fv)
+    return {'number': freq(fv, Feature.number),
+            'word': freq(fv, Feature.word),
+            'other': freq(fv, Feature.other),
+            'url': url}
 
 def scrape3(url):
-    ll = set([])
+    arst = set([])
     r = http.request('GET', url)
     soup = BeautifulSoup(r.data)
     #looking for anything with the header matching re archive
@@ -53,18 +88,21 @@ def scrape3(url):
     if not len(archive) == 0:
         for i in map(lambda x: x.find_all('a', href=True), archive):
             for j in i:
-                ll.add(j)
+                arst.add(j)
+    #find all things with dates in content
     links = soup.find_all('a', href=True)
     for i in filter(lambda x: containsDate(x.contents) or dictContainsDate(x.attrs), links):
-        ll.add(i)
+        arst.add(i)
+    #make sure it comes from same url
     def same(x):
         try:
-            return x.attrs['href'][0:len(url)] == url
-        except:
+            att = x.attrs['href']
+            return not arrow.get(att) == None or att[0:len(url)] == url or att[0] == '/'
+        except Exception:
             return False
+    arst = list(filter(same, arst))
 
-    ll = list(filter(same, ll))
-    return ll
+    return arst
 
 def pl(h):
     for i in h:
