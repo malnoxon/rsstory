@@ -35,9 +35,13 @@ def archive_to_rss(url):
                 ln = url + ln
         except e:
             ln = url + ln
+        if len(i.contents) > 0:
+            ti = str(i.contents[0])
+        else:
+            ti = "Unknown"
         rss_items.append(
             PyRSS2Gen.RSSItem(
-                title = i.contents[0],
+                title = ti,
                 link = ln,
                 description = "None",
                 guid = PyRSS2Gen.Guid("http://www.smbc-comics.com/index.php?id=281rdtra"),
@@ -46,13 +50,11 @@ def archive_to_rss(url):
         )
     url_data = [(i.link, i.title) for i in rss_items]
     write_rss(rss_items)
-    while True:
-        if last_update + time_between < datetime.datetime.now() and url_data:
-            gen_pages(rss_items, url_data)
-            last_update = datetime.datetime.now()
-
-            write_rss(rss_items)
+    #have to add delay maybe.
+    gen_pages(rss_items, url_data)
+    last_update = datetime.datetime.now()
+    write_rss(rss_items)
 
 
 if __name__ == "__main__":
-    archive_to_rss(str(sys.argv[0]))
+    archive_to_rss(str(sys.argv[1]))
