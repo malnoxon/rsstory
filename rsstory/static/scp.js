@@ -17,7 +17,6 @@ $(document).ready(function() {
       success: function (data, status) {
         data = window.JSON.parse(data);
         if (status === "success" && (! (data.rss === 'Error'))) {
-          console.log(window.location.href.slice(-1) + data.rss);
           $('#main_body').append("<a href=" + window.location.href.slice(0,-1) + data.rss + " id='rss_status'> Follow this link to your feed.</a>");
         } else {
           $('#main_body').append('<a id="rss_status"> Error</a>');
