@@ -27,8 +27,10 @@ def archive_to_rss(url):
     last_update = datetime.datetime.now()
     time_between = datetime.timedelta(seconds=30)
     rss_items = []
+    url_data = []
     links = scrape(url)
     for i in links:
+        # import pdb; pdb.set_trace()
         ln = i.attrs['href']
         try:
             if not ln[0:len(url)] == url:
@@ -39,17 +41,11 @@ def archive_to_rss(url):
             ti = str(i.contents[0])
         else:
             ti = "Unknown"
-        rss_items.append(
-            PyRSS2Gen.RSSItem(
-                title = ti,
-                link = ln,
-                description = "None",
-                guid = PyRSS2Gen.Guid("http://www.smbc-comics.com/index.php?id=281rdtra"),
-                pubDate = datetime.datetime.now()
-            )
-        )
-    url_data = [(i.link, i.title) for i in rss_items]
-    write_rss(rss_items)
+        print(ln)
+        print(ti)
+
+        url_data.append((ln, ti))
+
     #have to add delay maybe.
     gen_pages(rss_items, url_data)
     last_update = datetime.datetime.now()
