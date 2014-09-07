@@ -1,15 +1,19 @@
 import datetime, PyRSS2Gen, sys, pdb
 from scraping import *
+import urllib.parse
 
-def gen_pages(items, data_list):
-    data = data_list.pop(0)
-    items.append( PyRSS2Gen.RSSItem(
-        title = data[1],
-        link = data[0],
-        description = "tmp",
-        guid = PyRSS2Gen.Guid(data[0]),
-        pubDate = datetime.datetime.now()
-        ))
+def gen_pages(items, data_list, time_between):
+    curr_time = datetime.datetime.now()
+    while data_list:
+        data = data_list.pop(0)
+        items.append( PyRSS2Gen.RSSItem(
+            title = data[1],
+            link = data[0],
+            description = "tmp",
+            guid = PyRSS2Gen.Guid(data[0]),
+            pubDate = curr_time
+            ))
+        curr_time += time_between
 
 def write_rss(rss_items):
     rss = PyRSS2Gen.RSS2(
@@ -25,18 +29,15 @@ def write_rss(rss_items):
 
 def archive_to_rss(url):
     last_update = datetime.datetime.now()
-    time_between = datetime.timedelta(seconds=30)
+    time_between = datetime.timedelta(days=1)
     rss_items = []
     url_data = []
     links = scrape(url)
+    #TODO: instead of future dating, release the feeds in the future
     for i in links:
         # import pdb; pdb.set_trace()
         ln = i.attrs['href']
-        try:
-            if not ln[0:len(url)] == url:
-                ln = url + ln
-        except e:
-            ln = url + ln
+        ln = urllib.parse.urljoin(url, ln)
         if len(i.contents) > 0:
             ti = str(i.contents[0])
         else:
@@ -47,9 +48,10 @@ def archive_to_rss(url):
         url_data.append((ln, ti))
 
     #have to add delay maybe.
-    gen_pages(rss_items, url_data)
+    gen_pages(rss_items, url_data, time_between)
     last_update = datetime.datetime.now()
     write_rss(rss_items)
+    print("Done")
 
 
 if __name__ == "__main__":

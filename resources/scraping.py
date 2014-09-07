@@ -1,6 +1,10 @@
 import urllib3, re, pdb, arrow, itertools
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+from numpy import array
+import numpy as np
+import Pycluster
+import math
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
@@ -71,13 +75,33 @@ def classify(chunk):
 def freq(array, num):
     return sum([1 for i in array if i == num])
 def feature(url):
-    fv = re.split(re.compile('[-_/.//]'), url)
+    fv = re.split(re.compile('[-_/.//]'), str(url))
     fv = filter(lambda x: not x == '', fv)
     fv = map(lambda x: classify(x), fv)
     return {'number': freq(fv, Feature.number),
             'word': freq(fv, Feature.word),
             'other': freq(fv, Feature.other),
             'url': url}
+def filterArciveLinks(all_links): 
+    features = np.zeros(shape=(len(all_links),3))
+    for i, link in enumerate(all_links):
+        f = feature(link)
+        features[i][0] = f['number']
+        features[i][1] = f['word']
+        features[i][2] = f['other']
+    labels, error, nfound = Pycluster.kcluster(features,2)
+    group1 = []
+    group2 = []
+    for i,link in enumerate(all_links):
+        if labels[i] == 1:
+            group1.append(link)
+        else:
+            group2.append(link)
+
+    if len(group1) > len(group2):
+        return group1
+    else:
+        return group2
 
 def scrape(url):
     try:
@@ -87,7 +111,6 @@ def scrape(url):
         r = http.request('GET', url)
         soup = BeautifulSoup(r.data)
         #looking for anything with the header matching re archive
-        import pdb; pdb.set_trace()
         archive = soup.find_all(id=re.compile("archive", re.I))
         # archive = soup.find_all("archive")
         if not len(archive) == 0:
@@ -96,17 +119,18 @@ def scrape(url):
                     arst.add(j)
         #find all things with dates in content
         links = soup.find_all('a', href=True)
-        import pdb; pdb.set_trace()
         for i in filter(lambda x: containsDate(x.contents) or dictContainsDate(x.attrs), links):
             arst.add(i)
         #make sure it comes from same url
         def same(x):
+            #Same function fails on xkcd <= 999
             try:
                 att = x.attrs['href']
                 return not arrow.get(att) == None or att[0:len(url)] == url or att[0] == '/'
             except Exception:
                 return False
-        arst = list(filter(same, arst))
+        # arst = list(filter(same, arst))
+        arst = filterArciveLinks(arst)
 
         return arst
     except RuntimeError as e:
