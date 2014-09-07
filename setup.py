@@ -2,7 +2,6 @@ from setuptools import setup
 
 requires = [
     'pyramid',
-    'pyramid_debugtoolbar',
     'pyramid_chameleon',
 ]
 
