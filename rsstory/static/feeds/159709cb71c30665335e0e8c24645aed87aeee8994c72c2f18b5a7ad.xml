@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0"><channel><title>Test RSS feed</title><link>http://127.0.0.1:8000/sample.html</link><description>TEST</description><lastBuildDate>Sun, 07 Sep 2014 06:19:15 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Metamaterials</title><link>http://xkcd.com/archive//1351/</link><description>tmp</description><guid isPermaLink="true">http://xkcd.com/archive//1351/</guid><pubDate>Sun, 07 Sep 2014 06:19:15 GMT</pubDate></item></channel></rss>
