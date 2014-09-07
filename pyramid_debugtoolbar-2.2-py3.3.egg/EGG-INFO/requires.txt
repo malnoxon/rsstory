@@ -1,0 +1,11 @@
+pyramid>=1.2dev
+pyramid_mako>=0.3.1
+Pygments
+repoze.lru
+
+[docs]
+Sphinx
+
+[testing]
+nose
+coverage

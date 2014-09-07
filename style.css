@@ -1,0 +1,132 @@
+body {
+    font-family: "Trebuchet MS", Verdana, serif;
+    background-color:#C0C0C0
+}
+input {
+    width: 300px;
+}
+button {
+    font-size: 25px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#container {
+    margin: 0 auto;
+    width: 750px;
+}
+#header {
+    width: 100%;
+}
+#sub_header {
+    text-align: right;
+    font-weight: bold;
+    font-size: 20px;
+    color: #FFFFFF;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}
+#main_content {
+    margin: 0 auto;
+    width: 100%;
+    background-repeat: repeat-y;
+} 
+#main_content_top {
+    height: 30px;
+} 
+#main_content_bottom {
+    height: 30px;
+}
+#footer {
+    text-align: center;
+    font-size: 12px;
+    margin: 10px auto;
+}
+.content {
+    float: left;
+    text-align: justify;
+    padding: 0 30px 0 30px;
+    font-size: 12px;
+    font-size: 20px;
+}
+.menu {
+    width: 139px;
+    float: right;
+    padding: 0 20px 0 20px;
+    border-left: #8C8484 1px solid;
+    font-size: 12px;
+}
+.menu ul {
+    margin: 0;
+    padding: 10px 0 10px 15px;
+}
+.menu il {
+    list-style-type: disc;
+}
+#header h1 {
+    margin-bottom: 0px;
+    font-size: 50px;
+    font-weight: bold;
+    color: #A40008;
+}
+.content h2 {
+    margin-top: 0px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #A40008
+}
+.content h4 {
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    font-weight: bold;
+    padding: 0px 25px 0px 25px;
+    font-size: 24px;
+}
+#clear {
+    display: block;
+    clear: both;
+    width: 100%;
+    height:1px;
+    overflow:hidden;
+}
+.menu_title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #A40008;
+}
+.menu ul {
+    margin: 0;
+    padding: 10px 0 20px 15px;
+}
+.menu li {
+    padding-top: 2px;
+    list-style-type: circle;
+}
+a {
+    color: #A40008;
+    font-weight: bold;
+    text-decoration: none;
+}
+a:hover {
+    color: #A40008;
+    font-weight: bold;
+    text-decoration: underline;
+}
+a.menu_link {
+    color: #000000;
+    font-weight: bold;
+    text-decoration: underline;
+}
+a.menu_link:hover {
+    color: #A40008;
+    font-weight: bold;
+    text-decoration: none;
+}
+.quote {
+    margin: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+}
