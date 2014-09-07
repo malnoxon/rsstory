@@ -80,29 +80,37 @@ def feature(url):
             'url': url}
 
 def scrape(url):
-    arst = set([])
-    r = http.request('GET', url)
-    soup = BeautifulSoup(r.data)
-    #looking for anything with the header matching re archive
-    archive = soup.find_all(id=re.compile("archive", re.I))
-    if not len(archive) == 0:
-        for i in map(lambda x: x.find_all('a', href=True), archive):
-            for j in i:
-                arst.add(j)
-    #find all things with dates in content
-    links = soup.find_all('a', href=True)
-    for i in filter(lambda x: containsDate(x.contents) or dictContainsDate(x.attrs), links):
-        arst.add(i)
-    #make sure it comes from same url
-    def same(x):
-        try:
-            att = x.attrs['href']
-            return not arrow.get(att) == None or att[0:len(url)] == url or att[0] == '/'
-        except Exception:
-            return False
-    arst = list(filter(same, arst))
+    try:
+        import sys
+        sys.setrecursionlimit(10000)
+        arst = set([])
+        r = http.request('GET', url)
+        soup = BeautifulSoup(r.data)
+        #looking for anything with the header matching re archive
+        import pdb; pdb.set_trace()
+        archive = soup.find_all(id=re.compile("archive", re.I))
+        # archive = soup.find_all("archive")
+        if not len(archive) == 0:
+            for i in map(lambda x: x.find_all('a', href=True), archive):
+                for j in i:
+                    arst.add(j)
+        #find all things with dates in content
+        links = soup.find_all('a', href=True)
+        import pdb; pdb.set_trace()
+        for i in filter(lambda x: containsDate(x.contents) or dictContainsDate(x.attrs), links):
+            arst.add(i)
+        #make sure it comes from same url
+        def same(x):
+            try:
+                att = x.attrs['href']
+                return not arrow.get(att) == None or att[0:len(url)] == url or att[0] == '/'
+            except Exception:
+                return False
+        arst = list(filter(same, arst))
 
-    return arst
+        return arst
+    except RuntimeError as e:
+        print(e)
 
 def pl(h):
     for i in h:
