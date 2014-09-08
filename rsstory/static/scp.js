@@ -6,6 +6,7 @@ $(document).ready(function() {
     if ($('#rss_status').length) {
       $('#rss_status').remove();
     }
+    $('#main_body').append('<a id="rss_status">Loading...</a>');
     $.ajax({
       type: "POST",
       url: window.location.href + "feed",
@@ -15,9 +16,12 @@ $(document).ready(function() {
       }),
       contentType: 'application/json; charset=utf-8',
       success: function (data, status) {
+        if ($('#rss_status').length) {
+          $('#rss_status').remove();
+        }
         data = window.JSON.parse(data);
         if (status === "success" && (! (data.rss === 'Error'))) {
-          $('#main_body').append("<a href=" + window.location.href.slice(0,-1) + data.rss + " id='rss_status'> Follow this link to your feed.</a>");
+          $('#main_body').append("<a href=" + window.location.href.slice(0,-1) + data.rss + " id='rss_status'> <u>Follow this link to your feed.</u></a>");
         } else {
           $('#main_body').append('<a id="rss_status"> Error</a>');
         }

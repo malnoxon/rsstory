@@ -89,7 +89,10 @@ def filterArciveLinks(all_links):
         features[i][0] = f['number']
         features[i][1] = f['word']
         features[i][2] = f['other']
-    labels, error, nfound = Pycluster.kcluster(features,2)
+    if len(features) > 1:
+        labels, error, nfound = Pycluster.kcluster(features,2)
+    else:
+        return all_links
     group1 = []
     group2 = []
     for i,link in enumerate(all_links):
@@ -112,7 +115,6 @@ def scrape(url):
         soup = BeautifulSoup(r.data)
         #looking for anything with the header matching re archive
         archive = soup.find_all(id=re.compile("archive", re.I))
-        # archive = soup.find_all("archive")
         if not len(archive) == 0:
             for i in map(lambda x: x.find_all('a', href=True), archive):
                 for j in i:
