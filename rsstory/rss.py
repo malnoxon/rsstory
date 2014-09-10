@@ -1,6 +1,7 @@
 import datetime, PyRSS2Gen, sys, pdb, hashlib
 from scraping import *
 import urllib.parse
+import os
 
 def gen_pages(items, data_list, time_between):
     curr_time = datetime.datetime.now()
@@ -24,7 +25,7 @@ def write_rss(rss_items, url):
             items = rss_items
                 )
     s = hashlib.sha224(bytes(url, 'utf-8')).hexdigest()
-    f = open("/home/gabe/Projects/rsstory/rsstory/static/feeds/" + s + ".xml", "w+")
+    f = open(os.path.join(os.getcwd(),'rsstory','static', 'feeds', s+".xml"), "w+")
     rss.write_xml(f)
     return s
 
