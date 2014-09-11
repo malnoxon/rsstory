@@ -5,6 +5,8 @@ from numpy import array
 import numpy as np
 import Pycluster
 import math
+import dateutil.parser
+import datetime
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
@@ -106,6 +108,84 @@ def filterArciveLinks(all_links):
     else:
         return group2
 
+def sort_by_date(urls):
+    urls = list(filter(lambda x: date_of_url(x) is not None, urls))
+    urls.sort(key=lambda x: date_of_url(x))
+    print("URLS: ")
+    print(urls)
+    for i in urls:
+        print(i)
+        print(date_of_url(i))
+    return urls
+    # for link in urls:
+    # print(date_of_url(urls[0]))
+        # for attr in link.attrs.keys():
+            # print(link.attrs[attr])
+
+def date_of_url(link):
+    #TODO: test with yearfirst first, than monthfirst
+    d = None
+    try:
+        d = _date_of_url(link, False, False)
+    except:
+        d= None
+    # try:
+    #     d = _date_of_url(link, True, True)
+    # except ValueError:
+    #     print("A")
+    #     import pdb; pdb.set_trace()
+    #     try: 
+    #         d = _date_of_url(link, False, False)
+    #     except ValueError:
+    #         print("A")
+    #         try:
+    #             d = _date_of_url(link, True, False)
+    #         except ValueError:
+    #             print("A")
+    #             try:
+    #                 d = _date_of_url(link, False, True)
+    #             except ValueError:
+    #                 d = None
+    #                 print("FAILED TO PARSE ALL FORMATS OF DATE")
+
+    return d
+
+def _date_of_url(link, df, yf):
+    #TODO: compare by comparing date using 2 different defaults
+    parsed_exactness = []
+    parsed_dates = []
+    parsed = None
+    if link.attrs.keys is not None:
+        for attr in link.attrs.keys():
+            if attr is not None:
+                p1 = dateutil.parser.parse(link.attrs[attr], default=datetime.datetime.max, fuzzy=True, dayfirst=df, yearfirst=yf)
+                p2 = dateutil.parser.parse(link.attrs[attr], default=datetime.datetime.min, fuzzy=True, dayfirst=df, yearfirst=yf)
+                num_same = 0
+                if p1.year == p2.year:
+                    num_same += 1
+                if p1.month == p2.month:
+                    num_same += 1
+                if p1.day == p2.day:
+                    num_same += 1
+                parsed_exactness.append(num_same)
+                parsed_dates.append(p1)
+    p1 = dateutil.parser.parse(link.string, fuzzy=True, dayfirst=df, yearfirst=yf, default=datetime.datetime.max)
+    p2= dateutil.parser.parse(link.string, fuzzy=True, dayfirst=df, yearfirst=yf, default=datetime.datetime.min)
+    num_same = 0
+    if p1.year == p2.year:
+        num_same += 1
+    if p1.month == p2.month:
+        num_same += 1
+    if p1.day == p2.day:
+        num_same += 1
+    parsed_exactness.append(num_same)
+    parsed_dates.append(p1)
+
+    index = parsed_exactness.index(max(parsed_exactness))
+    parsed = parsed_dates[index]
+
+    return parsed
+
 def scrape(url):
     try:
         import sys
@@ -133,7 +213,9 @@ def scrape(url):
                 return False
         # arst = list(filter(same, arst))
         arst = filterArciveLinks(arst)
+        arst = sort_by_date(arst)
 
+        print(arst)
         return arst
     except RuntimeError as e:
         print(e)
