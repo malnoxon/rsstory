@@ -22,7 +22,7 @@ def write_rss(rss_items, url):
             link = "http://127.0.0.1:8000/sample.html",
             description = "TEST",
             lastBuildDate = datetime.datetime.now(),
-            items = rss_items
+            items = filter(lambda x: x.pubDate < datetime.datetime.now(), rss_items)
                 )
     s = hashlib.sha224(bytes(url, 'utf-8')).hexdigest()
     f = open(os.path.join(os.getcwd(),'rsstory','static', 'feeds', s+".xml"), "w+")
@@ -31,7 +31,7 @@ def write_rss(rss_items, url):
 
 def archive_to_rss(url):
     last_update = datetime.datetime.now()
-    time_between = datetime.timedelta(days=1)
+    time_between = datetime.timedelta(seconds=10)
     rss_items = []
     url_data = []
     links = scrape(url)
@@ -51,8 +51,10 @@ def archive_to_rss(url):
     gen_pages(rss_items, url_data, time_between)
     last_update = datetime.datetime.now()
     return write_rss(rss_items, url)
-    write_rss(rss_items)
     print("Done")
+    # while rss_items[-1].pubDate > datetime.datetime.now():
+    #     time.sleep(time_between.seconds) #??
+    #     write_rss(rss_items, url)
 
 
 if __name__ == "__main__":
