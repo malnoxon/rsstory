@@ -1,5 +1,4 @@
-import pdb
-import rss
+import rsstory.rss as rss
 from pyramid.response import Response
 from pyramid.view import view_config
 

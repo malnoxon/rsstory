@@ -1,5 +1,5 @@
 import datetime, PyRSS2Gen, sys, pdb, hashlib
-from scraping import *
+from rsstory.scraping import *
 import urllib.parse
 import os
 
