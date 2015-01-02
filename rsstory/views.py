@@ -3,7 +3,6 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 
-# First view, available at http://localhost:6543/
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
     return {}
@@ -12,5 +11,5 @@ def home(request):
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    s = rss.archive_to_rss(request.json_body['url'])
+    s = rss.archive_to_rss(request.json_body['url'], request.json_body['time'])
     return {"rss": "/static/feeds/" + s + ".xml"}
