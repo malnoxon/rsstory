@@ -1,17 +1,10 @@
-import urllib3, re, pdb, arrow, itertools
+import urllib3, re, arrow
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
-from numpy import array
 import numpy as np
 import Pycluster
-import math
 import dateutil.parser
 import datetime
-
-def powerset(iterable):
-    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
-    s = list(iterable)
-    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 http = urllib3.PoolManager()
 
@@ -22,7 +15,6 @@ def iterlen(itr):
     return l
 def firstMatchingID(soup, reg):
     def recur(soup, reg, ans):
-        print(type(soup))
         if soup.has_attr('id') and (not re.match(reg, soup.attrs["id"]) == None):
             return soup
         if iterlen(soup.children) == 0:
@@ -111,16 +103,8 @@ def filterArciveLinks(all_links):
 def sort_by_date(urls):
     urls = list(filter(lambda x: date_of_url(x) is not None, urls))
     urls.sort(key=lambda x: date_of_url(x))
-    print("URLS: ")
-    print(urls)
-    for i in urls:
-        print(i)
-        print(date_of_url(i))
+    import pdb; pdb.set_trace()
     return urls
-    # for link in urls:
-    # print(date_of_url(urls[0]))
-        # for attr in link.attrs.keys():
-            # print(link.attrs[attr])
 
 def date_of_url(link):
     #TODO: test with yearfirst first, than monthfirst
@@ -129,24 +113,6 @@ def date_of_url(link):
         d = _date_of_url(link, False, False)
     except:
         d= None
-    # try:
-    #     d = _date_of_url(link, True, True)
-    # except ValueError:
-    #     print("A")
-    #     import pdb; pdb.set_trace()
-    #     try: 
-    #         d = _date_of_url(link, False, False)
-    #     except ValueError:
-    #         print("A")
-    #         try:
-    #             d = _date_of_url(link, True, False)
-    #         except ValueError:
-    #             print("A")
-    #             try:
-    #                 d = _date_of_url(link, False, True)
-    #             except ValueError:
-    #                 d = None
-    #                 print("FAILED TO PARSE ALL FORMATS OF DATE")
 
     return d
 
@@ -215,7 +181,6 @@ def scrape(url):
         arst = filterArciveLinks(arst)
         arst = sort_by_date(arst)
 
-        print(arst)
         return arst
     except RuntimeError as e:
         print(e)

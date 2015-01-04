@@ -1,4 +1,4 @@
-import datetime, PyRSS2Gen, sys, pdb, hashlib, pickle
+import datetime, PyRSS2Gen, sys, pickle
 from rsstory.scraping import *
 import rsstory.periodic as periodic
 import urllib.parse
@@ -19,6 +19,7 @@ def gen_pages(items, data_list, time_between):
         curr_time += time_between
 
 def write_rss(rss_items):
+    # import pdb; pdb.set_trace()
     rss = PyRSS2Gen.RSS2(
             title = "Test RSS feed",
             link = "http://127.0.0.1:8000/sample.html",
@@ -32,7 +33,6 @@ def write_rss(rss_items):
     return s
 
 def archive_to_rss(url, time_between_posts):
-    last_update = datetime.datetime.now()
     time_between = datetime.timedelta(minutes=int(time_between_posts))
     rss_items = []
     url_data = []
@@ -52,7 +52,6 @@ def archive_to_rss(url, time_between_posts):
     fname = "rssitems{}.p".format(global_vars.global_index)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
     pickle.dump(rss_items, open(fpath, "wb"))
-    last_update = datetime.datetime.now()
     rss_feed_filename = write_rss(rss_items)
     periodic.setup_cron(fpath, time_between)
     global_vars.global_index += 1
