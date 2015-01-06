@@ -18,7 +18,9 @@ def gen_pages(items, data_list, time_between):
             ))
         curr_time += time_between
 
-def write_rss(rss_items):
+def write_rss(rss_items, page_num=None):
+    if page_num == None:
+        page_num = global_vars.global_index
     # import pdb; pdb.set_trace()
     rss = PyRSS2Gen.RSS2(
             title = "Test RSS feed",
@@ -27,7 +29,7 @@ def write_rss(rss_items):
             lastBuildDate = datetime.datetime.now(),
             items = filter(lambda x: x.pubDate < datetime.datetime.now(), rss_items)
                 )
-    s = str(global_vars.global_index)
+    s = str(page_num)
     f = open(os.path.join(os.path.abspath(os.path.dirname(__file__)),'static', 'feeds', s+".xml"), "w+")
     rss.write_xml(f)
     return s
