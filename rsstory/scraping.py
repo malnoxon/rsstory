@@ -70,6 +70,16 @@ def classify(chunk):
     return Feature.other
 def freq(array, num):
     return sum([1 for i in array if i == num])
+def feature_attrs(url, all_attrs):
+    features = {}
+    for key in all_attrs:
+        if key in url.attrs:
+            features[key] = 1
+        else:
+            features[key] = 0
+
+    return features
+
 def feature(url):
     fv = re.split(re.compile('[-_/.//]'), str(url))
     fv = filter(lambda x: not x == '', fv)
@@ -84,13 +94,27 @@ def filterArchiveLinks(all_links, page_url):
     domain = get_tld(page_url)
     all_links = [url for url in all_links if get_tld(url['href'], fail_silently=True) in (domain, None)]
 
+    # Cluster based on attributes of the links, largest is likely the archive
+    all_attrs = set()
+    for link in all_links:
+        for key in link.attrs.keys():
+            all_attrs.add(key)
 
-    features = np.zeros(shape=(len(all_links),3))
+    features = np.zeros(shape=(len(all_links), len(all_attrs)))
     for i, link in enumerate(all_links):
-        f = feature(link)
-        features[i][0] = f['number']
-        features[i][1] = f['word']
-        features[i][2] = f['other']
+        f = feature_attrs(link, all_attrs)
+        j = 0
+        for key in all_attrs:
+            features[i][j] = f[key]
+            j += 1
+
+    #TODO: maybe create these features in addition to the attrs of the links?
+    # features = np.zeros(shape=(len(all_links),3))
+    # for i, link in enumerate(all_links):
+    #     f = feature(link)
+    #     features[i][0] = f['number']
+    #     features[i][1] = f['word']
+    #     features[i][2] = f['other']
     if len(features) > 1:
         labels, error, nfound = Pycluster.kcluster(features,2)
     else:
