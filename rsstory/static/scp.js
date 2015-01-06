@@ -11,6 +11,7 @@ $(document).ready(function() {
       type: "POST",
       url: window.location.href + "feed",
       data: window.JSON.stringify({
+        title: $('#title').val(),
         url: $('#archive').val(),
         time: $('#time').val()
       }),

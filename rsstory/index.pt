@@ -16,12 +16,22 @@
       <div id="main_content">
         <div id="main_body" class="content">
           <h2>
-            <br/><br/>Turn static content into an RSS feed.
+            <br/><br/>Turn old archives into a new RSS feed
           </h2>
           <h4 class="content">
-            Enter the url to an archive and the time increment.
+            Enter feed parammeters
           </h4>
           <table>
+            <tr>
+              <td>
+                <b>New Feed Title (optional):</b>
+              </td>
+              <td>
+                <form>
+                  <input type="text" name="title" method="get" id="title" ></input>
+                </form>
+              </td>
+            </tr>
             <tr>
               <td>
                 <b>Archive URL:</b>

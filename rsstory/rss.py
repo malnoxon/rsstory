@@ -12,20 +12,24 @@ def gen_pages(items, data_list, time_between):
         items.append(PyRSS2Gen.RSSItem(
             title = data[1],
             link = data[0],
-            description = "tmp",
+            description = data[0],
             guid = PyRSS2Gen.Guid(data[0]),
             pubDate = curr_time
             ))
         curr_time += time_between
 
-def write_rss(rss_items, page_num=None):
+def write_rss(rss_items, url, page_num=None, title=None):
     if page_num == None:
         page_num = global_vars.global_index
+    if title == None or title == "":
+        title = "RSStory: {}".format(url)
+    description = "RSStory feed for {}".format(url)
+        
     # import pdb; pdb.set_trace()
     rss = PyRSS2Gen.RSS2(
-            title = "Test RSS feed",
+            title = title,
             link = "http://127.0.0.1:8000/sample.html",
-            description = "TEST",
+            description = description,
             lastBuildDate = datetime.datetime.now(),
             items = filter(lambda x: x.pubDate < datetime.datetime.now(), rss_items)
                 )
@@ -34,7 +38,7 @@ def write_rss(rss_items, page_num=None):
     rss.write_xml(f)
     return s
 
-def archive_to_rss(url, time_between_posts):
+def archive_to_rss(url, time_between_posts, title):
     time_between = datetime.timedelta(minutes=int(time_between_posts))
     rss_items = []
     url_data = []
@@ -54,11 +58,11 @@ def archive_to_rss(url, time_between_posts):
     fname = "rssitems{}.p".format(global_vars.global_index)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
     pickle.dump(rss_items, open(fpath, "wb"))
-    rss_feed_filename = write_rss(rss_items)
+    rss_feed_filename = write_rss(rss_items, url, title=title)
     periodic.setup_cron(fpath, time_between)
     global_vars.global_index += 1
     return rss_feed_filename
 
 
 if __name__ == "__main__":
-    archive_to_rss(str(sys.argv[1]), str(sys.argv[2]))
+    archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
