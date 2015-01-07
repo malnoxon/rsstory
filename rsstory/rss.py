@@ -3,7 +3,7 @@ from rsstory.scraping import *
 import rsstory.periodic as periodic
 import urllib.parse
 import os
-import global_vars
+import rsstory.global_vars as global_vars
 
 def gen_pages(items, data_list, time_between):
     curr_time = datetime.datetime.now()

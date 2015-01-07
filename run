@@ -1,3 +1,4 @@
 #!/bin/bash
+mkdir rsstory/static/rssitems
 python setup.py develop
 python runapp.py
