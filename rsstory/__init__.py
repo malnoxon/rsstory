@@ -1,7 +1,8 @@
 from pyramid.config import Configurator
-
+import load
 
 def main(global_config, **settings):
+    load.reload_global_index()
     config = Configurator(settings=settings)
     config.include('pyramid_chameleon')
     config.add_route('home', '/')
