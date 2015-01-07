@@ -17,9 +17,9 @@ def setup_cron(fpath, time_between):
     #TODO: remove the job once no longer needed
 
 def update_feed(fpath):
-    rss_items = pickle.load(open(fpath, "rb"))
+    rss_items, url, title = pickle.load(open(fpath, "rb"))
     page_num = re.findall(r'\d+', fpath)[-1]
-    write_rss(rss_items, page_num)
+    write_rss(rss_items, url, page_num=page_num, title=title)
 
 if __name__ == "__main__":
     update_feed(sys.argv[1])

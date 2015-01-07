@@ -57,7 +57,7 @@ def archive_to_rss(url, time_between_posts, title):
     gen_pages(rss_items, url_data, time_between)
     fname = "rssitems{}.p".format(global_vars.global_index)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
-    pickle.dump(rss_items, open(fpath, "wb"))
+    pickle.dump((rss_items, url, title), open(fpath, "wb"))
     rss_feed_filename = write_rss(rss_items, url, title=title)
     periodic.setup_cron(fpath, time_between)
     global_vars.global_index += 1
