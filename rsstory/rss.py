@@ -18,6 +18,15 @@ def gen_pages(items, data_list, time_between):
             ))
         curr_time += time_between
 
+    #End of archive message
+    items.append(PyRSS2Gen.RSSItem(
+        title = "Archive End",
+        description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
+        link = "https://github.com/Daphron/rsstory",
+        guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
+        pubDate = curr_time
+        ))
+
 def write_rss(rss_items, url, page_num=None, title=None):
     if page_num == None:
         page_num = global_vars.global_index
