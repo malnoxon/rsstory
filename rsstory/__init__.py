@@ -1,5 +1,5 @@
 from pyramid.config import Configurator
-import load
+import rsstory.load
 
 def main(global_config, **settings):
     load.reload_global_index()
