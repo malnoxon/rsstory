@@ -37,7 +37,7 @@ def write_rss(rss_items, url, page_num=None, title=None):
     # import pdb; pdb.set_trace()
     rss = PyRSS2Gen.RSS2(
             title = title,
-            link = "http://127.0.0.1:8000/sample.html",
+            link = url,
             description = description,
             lastBuildDate = datetime.datetime.now(),
             items = filter(lambda x: x.pubDate < datetime.datetime.now(), rss_items)
