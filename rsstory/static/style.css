@@ -37,9 +37,11 @@ button {
     height: 30px;
 }
 #footer {
-    text-align: center;
-    font-size: 12px;
-    margin: 10px auto;
+    font-size:11px;
+    position:absolute;
+    bottom:0;
+    height:60px;   /* Height of the footer */
+    text-align:center;
 }
 .content {
     float: left;

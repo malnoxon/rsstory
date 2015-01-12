@@ -58,6 +58,9 @@
           </button>
         </div>
       </div>
+      <div id="footer">
+        <p> Development of RSStory done at https://github.com/Daphron/rsstory</p>
+      </div>
     </div>
   </body>
   <script src="${request.static_url('rsstory:static/scp.js')}"></script>
