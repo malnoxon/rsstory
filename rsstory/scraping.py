@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import numpy as np
 import Pycluster
 import dateutil.parser
+import collections
 import datetime
 
 http = urllib3.PoolManager()
@@ -138,10 +139,9 @@ def sort_by_date(urls):
     return urls
 
 def date_of_url(link):
-    #TODO: test with yearfirst first, than monthfirst
     d = None
     try:
-        d = _date_of_url(link, False, False)
+        d = _date_of_url(link, True, True)
     except:
         d= None
 
@@ -154,34 +154,38 @@ def _date_of_url(link, df, yf):
     parsed = None
     if link.attrs.keys is not None:
         for attr in link.attrs.keys():
-            if attr is not None:
-                p1 = dateutil.parser.parse(link.attrs[attr], default=datetime.datetime.max, fuzzy=True, dayfirst=df, yearfirst=yf)
-                p2 = dateutil.parser.parse(link.attrs[attr], default=datetime.datetime.min, fuzzy=True, dayfirst=df, yearfirst=yf)
-                num_same = 0
-                if p1.year == p2.year:
-                    num_same += 1
-                if p1.month == p2.month:
-                    num_same += 1
-                if p1.day == p2.day:
-                    num_same += 1
-                parsed_exactness.append(num_same)
-                parsed_dates.append(p1)
-    p1 = dateutil.parser.parse(link.string, fuzzy=True, dayfirst=df, yearfirst=yf, default=datetime.datetime.max)
-    p2= dateutil.parser.parse(link.string, fuzzy=True, dayfirst=df, yearfirst=yf, default=datetime.datetime.min)
-    num_same = 0
-    if p1.year == p2.year:
-        num_same += 1
-    if p1.month == p2.month:
-        num_same += 1
-    if p1.day == p2.day:
-        num_same += 1
-    parsed_exactness.append(num_same)
-    parsed_dates.append(p1)
+            attribute = link.attrs[attr]
+            parse_date(link, df, yf, attribute, parsed_exactness, parsed_dates)
+    parse_date(link, df, yf, link.string, parsed_exactness, parsed_dates)
 
     index = parsed_exactness.index(max(parsed_exactness))
     parsed = parsed_dates[index]
 
     return parsed
+
+def parse_date(link, df, yf, attribute, parsed_exactness, parsed_dates):
+    if isinstance(attribute, str):
+        p1 = dateutil.parser.parse(attribute, default=datetime.datetime.max, fuzzy=True, dayfirst=df, yearfirst=yf)
+        p2 = dateutil.parser.parse(attribute, default=datetime.datetime.min, fuzzy=True, dayfirst=df, yearfirst=yf)
+        num_same = 0
+        if p1.year == p2.year:
+            num_same += 1
+        if p1.month == p2.month:
+            num_same += 1
+        if p1.day == p2.day:
+            num_same += 1
+        parsed_exactness.append(num_same)
+        parsed_dates.append(p1)
+    elif isinstance(attribute, collections.Iterable):
+        for subattribute in attribute:
+            parse_date(link, df, yf, subattribute, parsed_exactness, parsed_dates)
+
+
+
+def sort_links(links):
+    # links.reverse()
+    sorted_links = sort_by_date(links)
+    return sorted_links
 
 def scrape_page(url):
     '''Used if scraping a one page archive (eg https://xkcd.com/archive/ )'''
@@ -189,9 +193,9 @@ def scrape_page(url):
     soup = BeautifulSoup(r.data) #TODO different parser?
     links = soup.find_all('a', href=True)
     arst = filterArchiveLinks(links, url)
-    arst.reverse()
+    sorted_links = sort_links(arst)
 
-    return arst
+    return sorted_links
 
 def scrape_rest(url):
     sys.setrecursionlimit(10000)
