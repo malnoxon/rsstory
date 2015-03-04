@@ -22,7 +22,8 @@ $(document).ready(function() {
         }
         data = window.JSON.parse(data);
         if (status === "success" && (! (data.rss === 'Error'))) {
-          $('#main_body').append("<a href=" + window.location.href.slice(0,-1) + data.rss + " id='rss_status'> <u>Follow this link to your feed.</u></a>");
+          $('#main_body').append("<a href=" + window.location.href.slice(0,-1) + data.rss + " id='rss_status'> <u>Follow this link to your feed</u></a> or ");
+          $('#main_body').append("<a href=" + window.location.href.slice(0,-1) + data.preview + " id='rss_status'> <u>check your new feed for correctness.</u></a>");
         } else {
           $('#main_body').append('<a id="rss_status"> Error</a>');
         }

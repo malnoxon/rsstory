@@ -53,12 +53,6 @@ def isRelativeLink(st):
     return urlparse(st).netloc == '' and not urlparse(st).path == ''
 def isAbsoluteLink(st):
     return not urlparse(st).netloc == ''
-def tests():
-    urls = [("http://freegamer.blogspot.com/",),
-            ("http://www.mode7games.com/blog/",),
-            ("http://xkcd.com/archive/",),
-            "http://www.joelonsoftware.com/backIssues-2000-03.html"]
-
 class Feature():
     number = 0
     word = 1

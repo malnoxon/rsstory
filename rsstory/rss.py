@@ -47,6 +47,20 @@ def write_rss(rss_items, url, page_num=None, title=None):
     rss.write_xml(f)
     return s
 
+def write_preview_feed(rss_items, url, title):
+    fname = "preview{}.txt".format(global_vars.global_index)
+    fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'previews', fname)
+    f = open(fpath, 'w')
+    f.write("Title: {}\n".format(title))
+    f.write("URL: {}\n".format(url))
+    f.write("ITEMS: \n")
+    for i, item in enumerate(rss_items):
+        f.write(str(i) + ":\t" + item.title + " " + item.link + "\n")
+
+    f.close()
+    return fname
+    
+
 def archive_to_rss(url, time_between_posts, title):
     time_between = datetime.timedelta(minutes=int(time_between_posts))
     rss_items = []
@@ -69,8 +83,9 @@ def archive_to_rss(url, time_between_posts, title):
     pickle.dump((rss_items, url, title), open(fpath, "wb"))
     rss_feed_filename = write_rss(rss_items, url, title=title)
     periodic.setup_cron(fpath, time_between)
+    preview_feed_filename = write_preview_feed(rss_items, url, title)
     global_vars.global_index += 1
-    return rss_feed_filename
+    return (rss_feed_filename, preview_feed_filename)
 
 
 if __name__ == "__main__":

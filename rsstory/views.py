@@ -11,5 +11,5 @@ def home(request):
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    s = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'])
-    return {"rss": "/static/feeds/" + s + ".xml"}
+    xml_feed, preview_page = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'])
+    return {"rss": "/static/feeds/" + xml_feed + ".xml", "preview": "/static/previews/" + preview_page}
