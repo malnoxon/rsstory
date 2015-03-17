@@ -1,6 +1,7 @@
 import importlib
 import rsstory.scrapers.page as page
 import rsstory.scrapers.rest as rest
+import rsstory.scrapers.monthly_sidebar as monthly_sidebar
 import rsstory.scrapers.sites as sites
 
 def scrape(url):
@@ -11,12 +12,14 @@ def scrape(url):
             return method(url)
         else:
             page_type = None # Is the archive a 'page', a 'sidebar', 'nested sidebar'...
-            page_type = 'page' #TODO: currently we just assume a page, in future, ask user or figure it out dynamically
+            page_type = 'monthly_sidebar' #TODO: currently we just assume a page, in future, ask user or figure it out dynamically
 
             if page_type == 'page':
-                return page.scrape_page(url)
+                return page.scrape(url)
+            elif page_type == 'monthly_sidebar':
+                return monthly_sidebar.scrape(url)
             else:
-                return rest.scrape_rest(url)
+                return rest.scrape(url)
 
     except RuntimeError as e:
         print(e)

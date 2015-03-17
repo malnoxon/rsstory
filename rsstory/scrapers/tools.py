@@ -28,16 +28,16 @@ def firstMatchingID(soup, reg):
         return []
     recur(soup, reg, [])
 
-def containsDate(strng):
-    if isinstance(strng, list):
-        return any(map(lambda x: containsDate(x), strng))
-    if isinstance(strng, str):
+def containsDate(in_date):
+    if isinstance(in_date, list):
+        return any(map(lambda x: containsDate(x), in_date))
+    if isinstance(in_date, str):
         template = ["YYYY-MM-DD","YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D", "dddd-MMM-YYYY",
-                    "dddd-MMMM-YYYY", "MMMM-dddd-YYYY", "MMMM-DD-YYYY", "YYYY-MMMM", "YYYY-MMM", "YYYY-MM",
-                    'YYYY', 'MMMM', "MMM"]
+                    "dddd-MMMM-YYYY", "MMMM-dddd-YYYY", "MMMM-DD-YYYY", "YYYY-MMMM", "YYYY-MMM", "YYYY-MM", "MMMM YYYY", "MMMM YY", "MMM YYYY", "MMM YY"]#, "MMMM", "MMM", "YYYY"]
         for i in template:
             try:
-                arrow.get(strng, i)
+                arrow.get(in_date, i)
+                # import pdb; pdb.set_trace()
                 return True
             except Exception:
                 pass
@@ -81,7 +81,13 @@ def feature(url):
             'word': freq(fv, Feature.word),
             'other': freq(fv, Feature.other),
             'url': url}
+
+'''Filters the links by splitting them up into two clusters and throwing out the
+cluster that looks least like an archive'''
 def filterArchiveLinks(all_links, page_url): 
+
+
+
     #First remove all links to a different domain (broken links allowed as they
     # may actually be relative links)
     domain = get_tld(page_url)
@@ -108,6 +114,24 @@ def filterArchiveLinks(all_links, page_url):
     #     features[i][0] = f['number']
     #     features[i][1] = f['word']
     #     features[i][2] = f['other']
+
+    # Check that all columns are different in features, if not we return all links
+    # since we can't determine clusters
+    _, num_cols = features.shape
+    col = None
+    diff_cols = False
+    for i in range(0, num_cols):
+        if col == None:
+            col = features[:,i]
+        else:
+            if col != features[:,i]:
+                diff_cols = True
+                break
+
+    if not diff_cols:
+        return all_links
+
+    # import pdb; pdb.set_trace()
     if len(features) > 1:
         labels, error, nfound = Pycluster.kcluster(features,2)
     else:
@@ -125,9 +149,36 @@ def filterArchiveLinks(all_links, page_url):
     else:
         return group2
 
+def date_of_url_arrow(link):
+    template = ["YYYY-MM-DD","YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D", "dddd-MMM-YYYY", "dddd-MMMM-YYYY", "MMMM-dddd-YYYY", "MMMM-DD-YYYY", "YYYY-MMMM", "YYYY-MMM", "YYYY-MM", "MMMM YYYY", "MMMM YY", "MMM YYYY", "MMM YY"]#, "MMMM", "MMM", "YYYY"]
+    # import pdb; pdb.set_trace()
+    if link.attrs.keys() is not None:
+        for attr in link.attrs.keys():
+            attribute = link.attrs[attr]
+            for i in template:
+                try:
+                    date = arrow.get(attribute,i)
+                    return date
+                except:
+                    pass
+
+    for i in template:
+        try:
+            date = arrow.get(link.text, i)
+            return date
+        except Exception:
+            pass
+    import pdb; pdb.set_trace()
+    return None
+
 def sort_by_date(urls):
-    urls = list(filter(lambda x: date_of_url(x) is not None, urls))
-    urls.sort(key=lambda x: date_of_url(x))
+    #If date_of_url fails on some dates, use arrow
+    # import pdb; pdb.set_trace()
+    if any(filter(lambda x: date_of_url(x) is None, urls)):
+        urls.sort(key=lambda x: date_of_url_arrow(x))
+    else:
+        urls = list(filter(lambda x: date_of_url(x) is not None, urls))
+        urls.sort(key=lambda x: date_of_url(x))
     return urls
 
 def date_of_url(link):

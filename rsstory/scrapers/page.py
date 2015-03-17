@@ -4,7 +4,7 @@ import rsstory.scrapers.tools as tools
 
 http = urllib3.PoolManager()
 
-def scrape_page(url):
+def scrape(url):
     '''Used if scraping a one page archive (eg https://xkcd.com/archive/ )'''
     r = http.request('GET', url)
     soup = BeautifulSoup(r.data) #TODO different parser?
