@@ -37,7 +37,6 @@ def containsDate(in_date):
         for i in template:
             try:
                 arrow.get(in_date, i)
-                # import pdb; pdb.set_trace()
                 return True
             except Exception:
                 pass
@@ -131,7 +130,6 @@ def filterArchiveLinks(all_links, page_url):
     if not diff_cols:
         return all_links
 
-    # import pdb; pdb.set_trace()
     if len(features) > 1:
         labels, error, nfound = Pycluster.kcluster(features,2)
     else:
@@ -151,7 +149,6 @@ def filterArchiveLinks(all_links, page_url):
 
 def date_of_url_arrow(link):
     template = ["YYYY-MM-DD","YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D", "dddd-MMM-YYYY", "dddd-MMMM-YYYY", "MMMM-dddd-YYYY", "MMMM-DD-YYYY", "YYYY-MMMM", "YYYY-MMM", "YYYY-MM", "MMMM YYYY", "MMMM YY", "MMM YYYY", "MMM YY"]#, "MMMM", "MMM", "YYYY"]
-    import pdb; pdb.set_trace()
     if link.attrs.keys() is not None:
         for attr in link.attrs.keys():
             attribute = link.attrs[attr]
@@ -168,13 +165,12 @@ def date_of_url_arrow(link):
             return date
         except Exception:
             pass
-    import pdb; pdb.set_trace()
     return None
 
 def sort_by_date(urls):
     #If date_of_url fails on some dates, use arrow
-    # import pdb; pdb.set_trace()
     if any(filter(lambda x: date_of_url(x) is None, urls)):
+        urls = list(filter(lambda x: date_of_url_arrow(x) is not None, urls))
         urls.sort(key=lambda x: date_of_url_arrow(x))
     else:
         urls = list(filter(lambda x: date_of_url(x) is not None, urls))
