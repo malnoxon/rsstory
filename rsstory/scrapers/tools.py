@@ -121,10 +121,10 @@ def filterArchiveLinks(all_links, page_url):
     col = None
     diff_cols = False
     for i in range(0, num_cols):
-        if col == None:
+        if col is None:
             col = features[:,i]
         else:
-            if col != features[:,i]:
+            if np.array_equal(col, features[:,i]):
                 diff_cols = True
                 break
 
@@ -151,7 +151,7 @@ def filterArchiveLinks(all_links, page_url):
 
 def date_of_url_arrow(link):
     template = ["YYYY-MM-DD","YYYY-M-DD", "YYYY-MM-D", "YYYY-M-D", "dddd-MMM-YYYY", "dddd-MMMM-YYYY", "MMMM-dddd-YYYY", "MMMM-DD-YYYY", "YYYY-MMMM", "YYYY-MMM", "YYYY-MM", "MMMM YYYY", "MMMM YY", "MMM YYYY", "MMM YY"]#, "MMMM", "MMM", "YYYY"]
-    # import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
     if link.attrs.keys() is not None:
         for attr in link.attrs.keys():
             attribute = link.attrs[attr]
@@ -222,8 +222,6 @@ def parse_date(link, df, yf, attribute, parsed_exactness, parsed_dates):
     elif isinstance(attribute, collections.Iterable):
         for subattribute in attribute:
             parse_date(link, df, yf, subattribute, parsed_exactness, parsed_dates)
-
-
 
 def sort_links(links):
     # links.reverse()

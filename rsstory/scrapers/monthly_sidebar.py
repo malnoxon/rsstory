@@ -4,6 +4,7 @@ import rsstory.scrapers.tools as tools
 
 http = urllib3.PoolManager()
 
+''' Grabs the monthly archive links from a sidebar and returns them'''
 def scrape(url):
     sys.setrecursionlimit(10000)
     month_links = set([])

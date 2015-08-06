@@ -1,8 +1,0 @@
-README.txt
-setup.py
-rsstory.egg-info/PKG-INFO
-rsstory.egg-info/SOURCES.txt
-rsstory.egg-info/dependency_links.txt
-rsstory.egg-info/entry_points.txt
-rsstory.egg-info/requires.txt
-rsstory.egg-info/top_level.txt
