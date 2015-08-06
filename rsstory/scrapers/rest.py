@@ -1,13 +1,20 @@
 import urllib3, re, arrow, sys
 from bs4 import BeautifulSoup
 import rsstory.scrapers.tools as tools
+import certifi
 
-http = urllib3.PoolManager()
+http = urllib3.PoolManager(
+        cert_reqs='CERT_REQUIRED',
+        ca_certs=certifi.where(),
+        )
 
 def scrape(url):
     sys.setrecursionlimit(10000)
     arst = set([])
-    r = http.request('GET', url)
+    try:
+        r = http.request('GET', url)
+    except urllib3.exceptions.SSLError as e:
+        print(e)
     soup = BeautifulSoup(r.data)
     #looking for anything with the header matching re archive
     # EG, if on a blog such as http://terrytao.wordpress.com/ where no 

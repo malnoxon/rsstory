@@ -6,8 +6,12 @@ import Pycluster
 import dateutil.parser
 import collections
 import datetime
+import certifi
 
-http = urllib3.PoolManager()
+http = urllib3.PoolManager(
+        cert_reqs='CERT_REQUIRED',
+        ca_certs=certifi.where()
+        )
 
 def iterlen(itr):
     l = 0
