@@ -20,5 +20,5 @@ To use, simply fill in the 3 fields and add the feed to your RSS reader of chois
 **RSStory** is still in an alpha state and as such does not work on many sites. If you want a site **RSStory** is guarenteed to work on, try the [xkcd archives](https://xkcd.com/archive/)
 
 ###Problems
-* If you have a specific website you would like to use **RSStory** on but currently fails, please comment on this [issue](https://github.com/Daphron/rsstory/issues/8)
+* If you have a specific website you would like to use **RSStory** on but currently fails, please report it at [rsstory.me/archive_fails](http://rsstory.me/archive_fails) or comment on this [issue](https://github.com/Daphron/rsstory/issues/8)
 * If you encounter a different problem with **RSStory**, please create a github [issue](https://github.com/Daphron/rsstory/issues) and I'll try to fix it
