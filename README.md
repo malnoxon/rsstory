@@ -1,25 +1,23 @@
 RSStory
 =================
 
-[![Join the chat at https://gitter.im/Daphron/rsstory](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Daphron/rsstory?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 **RSStory** is a tool to turn the archives of blogs and webcomics into new RSS feeds.
 
 **Use now at [rsstory.me](http://rsstory.me)**
 
 ###When would I use **RSStory**?
 * If you've just discovered a new webcomic and want to read through the archives at a leisuly pace, **RSStory** can do that. 
-* If your favorite blogger just stopped blogging, you can use **RSStory** to have an article from his past work delivered to you daily.
+* If your favorite blogger just stopped blogging, you can use **RSStory** to have an article from their past work delivered to you daily.
 * Basically, you would use **RSStory** any time you want a regular stream of old content.
 
 
 ###Usage
 
-**RSStory** is still under development and as such has many issues (most notably that **RSStory** fails on a large number of sites). If this is not an issue for you, you may use RSStory now at [rsstory.me](http://rsstory.me)
+You may use **RSStory** now at [rsstory.me](http://rsstory.me)
 
 To use, simply fill in the 3 fields and add the feed to your RSS reader of choise.
 
-If you want a site **RSStory** is guarenteed to work on, try the [xkcd archives](https://xkcd.com/archive/)
+**RSStory** is still in an alpha state and as such does not work on many sites. If you want a site **RSStory** is guarenteed to work on, try the [xkcd archives](https://xkcd.com/archive/)
 
 ###Problems
 * If you have a specific website you would like to use **RSStory** on but currently fails, please comment on this [issue](https://github.com/Daphron/rsstory/issues/8)

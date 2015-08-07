@@ -59,7 +59,6 @@ def write_preview_feed(rss_items, url, title):
 
     f.close()
     return fname
-    
 
 def archive_to_rss(url, time_between_posts, title):
     time_between = datetime.timedelta(minutes=int(time_between_posts))
@@ -87,6 +86,13 @@ def archive_to_rss(url, time_between_posts, title):
     global_vars.global_index += 1
     return (rss_feed_filename, preview_feed_filename)
 
+def report_archive_fail(url, comments):
+    fname = "failed_urls.txt"
+    fpath = os.path.join(os.getcwd(), 'rsstory', fname)
+    f = open(fpath, 'a')
+    f.write("URL: {}\n".format(url))
+    f.write("COMMENTS: {} \n".format(comments))
+    f.close()
 
 if __name__ == "__main__":
     archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
