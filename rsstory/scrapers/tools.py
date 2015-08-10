@@ -18,6 +18,7 @@ def iterlen(itr):
     for i in itr:
         l += 1
     return l
+
 def firstMatchingID(soup, reg):
     def recur(soup, reg, ans):
         if soup.has_attr('id') and (not re.match(reg, soup.attrs["id"]) == None):
@@ -45,27 +46,34 @@ def containsDate(in_date):
             except Exception:
                 pass
     return False
+
 def dictContainsDate(dic):
     match = False
     for i in dic.values():
         match = match or containsDate(i)
     return match
+
 def isRelativeLink(st):
     return urlparse(st).netloc == '' and not urlparse(st).path == ''
+
 def isAbsoluteLink(st):
     return not urlparse(st).netloc == ''
+
 class Feature():
     number = 0
     word = 1
     other = 2
+
 def classify(chunk):
     if chunk.isalpha():
         return Feature.word
     elif chunk.isdigit():
         return Feature.number
     return Feature.other
+
 def freq(array, num):
     return sum([1 for i in array if i == num])
+
 def feature_attrs(url, all_attrs):
     features = {}
     for key in all_attrs:
@@ -85,11 +93,12 @@ def feature(url):
             'other': freq(fv, Feature.other),
             'url': url}
 
-'''Filters the links by splitting them up into two clusters and throwing out the
-cluster that looks least like an archive'''
 def filterArchiveLinks(all_links, page_url): 
-
-
+    '''Filters the links by splitting them up into two clusters and throwing 
+    out the cluster that looks least like an archive. Note that this is most 
+    effective if the page is essencially archive links, and other boilerplate
+    stuff, i.e. a one page full archive. It is much less likely to work on
+    Sidebar and drop-down archives'''
 
     #First remove all links to a different domain (broken links allowed as they
     # may actually be relative links)
