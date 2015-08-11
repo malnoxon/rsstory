@@ -3,7 +3,6 @@ from rsstory.scraping import *
 import rsstory.periodic as periodic
 import urllib.parse
 import os
-import rsstory.global_vars as global_vars
 from random import SystemRandom
 
 def gen_pages(items, data_list, time_between):
@@ -28,9 +27,7 @@ def gen_pages(items, data_list, time_between):
         pubDate = curr_time
         ))
 
-def write_rss(rss_items, url, page_num=None, title=None):
-    if page_num == None:
-        page_num = global_vars.curr_id
+def write_rss(rss_items, url, archive_id, title=None):
     if title == None or title == "":
         title = "RSStory: {}".format(url)
     description = "RSStory feed for {}".format(url)
@@ -43,13 +40,13 @@ def write_rss(rss_items, url, page_num=None, title=None):
             lastBuildDate = datetime.datetime.now(),
             items = filter(lambda x: x.pubDate < datetime.datetime.now(), rss_items)
                 )
-    s = str(page_num)
+    s = str(archive_id)
     f = open(os.path.join(os.path.abspath(os.path.dirname(__file__)),'static', 'feeds', s+".xml"), "w+")
     rss.write_xml(f)
     return s
 
-def write_preview_feed(rss_items, url, title):
-    fname = "preview{}.txt".format(global_vars.curr_id)
+def write_preview_feed(rss_items, url, title, feed_id):
+    fname = "preview{}.txt".format(feed_id)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'previews', fname)
     f = open(fpath, 'w')
     f.write("Title: {}\n".format(title))
@@ -78,13 +75,13 @@ def archive_to_rss(url, time_between_posts, title):
 
     #have to add delay maybe.
     gen_pages(rss_items, url_data, time_between)
-    fname = "rssitems{}.p".format(global_vars.curr_id)
+    archive_id = SystemRandom().getrandbits(512)
+    fname = "rssitems{}.p".format(archive_id)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
     pickle.dump((rss_items, url, title), open(fpath, "wb"))
-    rss_feed_filename = write_rss(rss_items, url, title=title)
+    rss_feed_filename = write_rss(rss_items, url, archive_id, title=title)
     periodic.setup_cron(fpath, time_between)
-    preview_feed_filename = write_preview_feed(rss_items, url, title)
-    global_vars.curr_id = SystemRandom().getrandbits(512)
+    preview_feed_filename = write_preview_feed(rss_items, url, title, archive_id)
     return (rss_feed_filename, preview_feed_filename)
 
 def report_archive_fail(url, comments):
