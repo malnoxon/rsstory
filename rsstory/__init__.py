@@ -2,7 +2,7 @@ from pyramid.config import Configurator
 import rsstory.load
 
 def main(global_config, **settings):
-    load.reload_global_index()
+    load.reload_curr_id()
     config = Configurator(settings=settings)
     config.include('pyramid_chameleon')
     config.add_route('home', '/')

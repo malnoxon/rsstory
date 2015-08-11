@@ -4,6 +4,7 @@ import rsstory.periodic as periodic
 import urllib.parse
 import os
 import rsstory.global_vars as global_vars
+from random import SystemRandom
 
 def gen_pages(items, data_list, time_between):
     curr_time = datetime.datetime.now()
@@ -29,7 +30,7 @@ def gen_pages(items, data_list, time_between):
 
 def write_rss(rss_items, url, page_num=None, title=None):
     if page_num == None:
-        page_num = global_vars.global_index
+        page_num = global_vars.curr_id
     if title == None or title == "":
         title = "RSStory: {}".format(url)
     description = "RSStory feed for {}".format(url)
@@ -48,7 +49,7 @@ def write_rss(rss_items, url, page_num=None, title=None):
     return s
 
 def write_preview_feed(rss_items, url, title):
-    fname = "preview{}.txt".format(global_vars.global_index)
+    fname = "preview{}.txt".format(global_vars.curr_id)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'previews', fname)
     f = open(fpath, 'w')
     f.write("Title: {}\n".format(title))
@@ -77,13 +78,13 @@ def archive_to_rss(url, time_between_posts, title):
 
     #have to add delay maybe.
     gen_pages(rss_items, url_data, time_between)
-    fname = "rssitems{}.p".format(global_vars.global_index)
+    fname = "rssitems{}.p".format(global_vars.curr_id)
     fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
     pickle.dump((rss_items, url, title), open(fpath, "wb"))
     rss_feed_filename = write_rss(rss_items, url, title=title)
     periodic.setup_cron(fpath, time_between)
     preview_feed_filename = write_preview_feed(rss_items, url, title)
-    global_vars.global_index += 1
+    global_vars.curr_id = SystemRandom().getrandbits(512)
     return (rss_feed_filename, preview_feed_filename)
 
 def report_archive_fail(url, comments):
