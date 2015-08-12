@@ -17,6 +17,11 @@ def scrape(url):
             method = getattr(mod, 'scrape')
             return method(url)
 
+        elif get_tld(url) == "blogspot.com":
+            mod = importlib.import_module("rsstory.scrapers.siteRules.blogspot")
+            method = getattr(mod, 'scrape')
+            return method(url)
+
         else:
             page_type = None # Is the archive a 'page', a 'sidebar', 'nested sidebar'...
             page_type = 'page' #TODO: currently we just assume a page, in future, ask user or figure it out dynamically
