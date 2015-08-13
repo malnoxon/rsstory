@@ -28,7 +28,7 @@ $(document).ready(function() {
         }
         data = window.JSON.parse(data);
         if (status === "success" && (! (data.rss === 'Error'))) {
-          $('#main_body').append("<span id='rss_output'><a href=" + window.location.href.slice(0,-1) + data.rss + "> <u>Follow this link to your feed</u></a> or <a rss_output' href=" + window.location.href.slice(0,-1) + data.preview + "> <u>check your new feed for correctness.</u></a></span>");
+          $('#main_body').append("<span id='rss_output'><a href=" + window.location.href.slice(0,-1) + data.rss + "> <u>Follow this link to your feed</u></a> or <a rss_output' href=" + window.location.href.slice(0,-1) + data.preview + " target='_blank'> <u>check your new feed for correctness.</u></a></span>");
         } else {
           $('#main_body').append('<span id="rss_output"> Error</span>');
         }
