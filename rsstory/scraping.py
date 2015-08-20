@@ -4,6 +4,10 @@ import rsstory.scrapers.page as page
 import rsstory.scrapers.rest as rest
 import rsstory.scrapers.monthly_sidebar as monthly_sidebar
 import rsstory.scrapers.sites as sites
+import rsstory.scrapers.siteRules.wordpress as wordpress
+import logging
+
+log = logging.getLogger(__name__)
 
 def scrape(url):
     try:
@@ -12,14 +16,16 @@ def scrape(url):
             method = getattr(mod, 'scrape')
             return method(url)
 
-        elif get_tld(url) == "wordpress.com":
+        elif wordpress.is_wordpress(url):
             mod = importlib.import_module("rsstory.scrapers.siteRules.wordpress")
             method = getattr(mod, 'scrape')
+            log.info("Wordpress heuristics will be used")
             return method(url)
 
         elif get_tld(url) == "blogspot.com":
             mod = importlib.import_module("rsstory.scrapers.siteRules.blogspot")
             method = getattr(mod, 'scrape')
+            log.info("Blogspot heuristics will be used")
             return method(url)
 
         else:
@@ -27,8 +33,10 @@ def scrape(url):
             page_type = 'page' #TODO: currently we just assume a page, in future, ask user or figure it out dynamically
 
             if page_type == 'page':
+                log.info("Single page archive heuristics will be used")
                 return page.scrape(url)
             elif page_type == 'monthly_sidebar':
+                log.info("Monthly sidebar archive heuristics will be used")
                 return monthly_sidebar.scrape(url)
             else:
                 return rest.scrape(url)

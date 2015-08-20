@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import certifi
 from tld import get_tld
 import re
+import rsstory.scrapers.tools as tools
 
 http = urllib3.PoolManager(
         cert_reqs='CERT_REQUIRED',
