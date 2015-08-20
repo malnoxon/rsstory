@@ -98,13 +98,22 @@ def archive_to_rss(url, time_between_posts, title, recaptcha_answer, ip):
         raise Exception('Invalid captcha')
         return
 
-def report_archive_fail(url, comments):
-    fname = "failed_urls.txt"
-    fpath = os.path.join(os.getcwd(), 'rsstory', fname)
-    f = open(fpath, 'a')
-    f.write("URL: {}\n".format(url))
-    f.write("COMMENTS: {} \n".format(comments))
-    f.close()
+def report_archive_fail(url, comments, ip, recaptcha_answer):
+    log.info("Beginning report_archive_fail")
+    captcha_response = submit(remote_ip=ip, secret_key="6LcHZQsTAAAAALNHKDDOht1UXok-vnY4KJE13RGJ", response=recaptcha_answer)
+    log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
+    if captcha_response.is_valid:
+        log.info("Captcha response verified as valid")
+        fname = "failed_urls.txt"
+        fpath = os.path.join(os.getcwd(), 'rsstory', fname)
+        f = open(fpath, 'a')
+        f.write("URL: {}\n".format(url))
+        f.write("COMMENTS: {} \n".format(comments))
+        f.close()
+        return True
+    else:
+        log.error("Captcha invalid")
+        return False
 
 if __name__ == "__main__":
     archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))

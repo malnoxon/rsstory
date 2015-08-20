@@ -10,12 +10,19 @@ $(document).ready(function() {
       $('#rss_output').remove();
     }
     $('#main_body').append('<a id="rss_status">Loading...</a>');
+
+    // set captcha value
+    var elem = document.getElementById("captcha");
+    elem.value = grecaptcha.getResponse();
+    grecaptcha.reset();
+
     $.ajax({
       type: "POST",
       url: window.location.href + '/report' ,
       data: window.JSON.stringify({
         url: $('#archive').val(),
-        comments: $('#comments').val()
+        comments: $('#comments').val(),
+        captcha: $('#captcha').val()
       }),
       contentType: 'application/json; charset=utf-8',
       success: function (data, status) {
@@ -25,6 +32,7 @@ $(document).ready(function() {
         if ($('#rss_output').length) {
           $('#rss_output').remove();
         }
+        data = window.JSON.parse(data);
         if (status === "success" && (! (data.rss === 'Error'))) {
           $('#main_body').append('<span id="rss_output">URL reported successfully</span>');
         } else {

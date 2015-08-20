@@ -24,5 +24,7 @@ def archive_fails(request):
 
 @view_config(route_name='report_archive_fails', renderer='json')
 def report_archive_fails(request):
-    rss.report_archive_fail(request.json_body['url'], request.json_body['comments'])
-    return {"success": True}
+    if rss.report_archive_fail(request.json_body['url'], request.json_body['comments'], request.remote_addr, request.json_body['captcha']):
+        return {"success": True}
+    else:
+        return {"rss": "Error"}
