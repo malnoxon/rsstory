@@ -63,9 +63,16 @@ def write_preview_feed(rss_items, url, title, feed_id):
     return fname
 
 def archive_to_rss(url, time_between_posts, title, recaptcha_answer, ip):
-    #TODO: do NOT push until the secret key is hidden in a config file!
     log.info("Beginning archive_to_rss()")
-    captcha_response = submit(remote_ip=ip, secret_key="6LcHZQsTAAAAALNHKDDOht1UXok-vnY4KJE13RGJ", response=recaptcha_answer)
+    key = ""
+    try:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'recaptcha_key_secret.key'), 'r') as f:
+            key = f.readline()
+    except:
+        log.error("The file containing the secret key was not located")
+        return (False, False)
+        
+    captcha_response = submit(remote_ip=ip, secret_key=key, response=recaptcha_answer)
     log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
     if captcha_response.is_valid:
         log.info("Captcha response verified as valid")
@@ -95,12 +102,19 @@ def archive_to_rss(url, time_between_posts, title, recaptcha_answer, ip):
         return (rss_feed_filename, preview_feed_filename)
     else:
         log.error("Invalid captcha entered")
-        raise Exception('Invalid captcha')
-        return
+        return (False, False)
 
 def report_archive_fail(url, comments, ip, recaptcha_answer):
     log.info("Beginning report_archive_fail")
-    captcha_response = submit(remote_ip=ip, secret_key="6LcHZQsTAAAAALNHKDDOht1UXok-vnY4KJE13RGJ", response=recaptcha_answer)
+    key = ""
+    try:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'recaptcha_key_secret.key'), 'r') as f:
+            key = f.readline()
+    except:
+        log.error("The file containing the secret key was not located")
+        return False
+        
+    captcha_response = submit(remote_ip=ip, secret_key=key, response=recaptcha_answer)
     log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
     if captcha_response.is_valid:
         log.info("Captcha response verified as valid")
