@@ -54,7 +54,7 @@ def get_post_from_month(month_url):
     for link in links:
         try:
             url = link.attrs['href']
-            match = url.startswith(month_url_base + "/" + year + "/" + month + "/")
+            match = url.startswith(tools.clean_url(month_url_base) + year + "/" + month + "/")
             if match:
                 post_links.append(link)
 

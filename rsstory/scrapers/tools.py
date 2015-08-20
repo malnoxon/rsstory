@@ -19,6 +19,14 @@ def iterlen(itr):
         l += 1
     return l
 
+def clean_url(url):
+    '''Removes protocol from url and ensures a trailing slash exists'''
+    url = url.replace("http://", "").replace("https://", "")
+    if url[-1] != "/":
+        url.append("/")
+
+    return url
+
 def firstMatchingID(soup, reg):
     def recur(soup, reg, ans):
         if soup.has_attr('id') and (not re.match(reg, soup.attrs["id"]) == None):

@@ -18,7 +18,7 @@ def get_monthly_archive_urls(links, page_url):
         # Try for drop down lists using <option value="url.com/...">
         try:
             url = link.attrs['value']
-            match = re.search(domain + "/\d{4}/\d{2}", url)
+            match = re.search(domain + "/\d{4}/\d{2}/$", url)
             if match:
                 monthly_archive_urls.append(url)
 
@@ -28,7 +28,7 @@ def get_monthly_archive_urls(links, page_url):
         # Try for actual <a href="url.com/..." > links
         try:
             url = link.attrs['href']
-            match = re.search(domain + "/\d{4}/\d{2}", url)
+            match = re.search(domain + "/\d{4}/\d{2}/$", url)
             if match:
                 monthly_archive_urls.append(url)
 
@@ -50,7 +50,7 @@ def get_post_from_month(month_url):
     for link in links:
         try:
             url = link.attrs['href']
-            match = re.search(month_url + "\d{2}", url)
+            match = re.search(tools.clean_url(month_url) + "\d{2}", url)
             if match:
                 post_links.append(link)
 
