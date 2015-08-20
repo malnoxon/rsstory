@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
     <link rel="stylesheet" href="${request.static_url('rsstory:static/style.css')}">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
   </head>
   <body>
     <div id="container">
@@ -28,7 +29,7 @@
               </td>
               <td>
                 <form>
-                  <input type="text" name="title" method="get" id="title" ></input>
+                  <input type="text" name="title" id="title" ></input>
                 </form>
               </td>
             </tr>
@@ -38,7 +39,7 @@
               </td>
               <td>
                 <form>
-                  <input type="text" name="archive" method="get" id="archive" ></input>
+                  <input type="text" name="archive" id="archive" ></input>
                 </form>
               </td>
             </tr>
@@ -48,11 +49,13 @@
               </td>
               <td>
                 <form>
-                  <input type="text" name="time" method="get" id="time"></input>
+                  <input type="text" name="time" id="time"></input>
+                  <input type="hidden" name="captcha" id="captcha">
                 </form>
               </td>
             </tr>
           </table>
+            <div class="g-recaptcha" data-sitekey="6LcHZQsTAAAAAG1MSHuQpKKvtx4D_o8FYt2VfSFq"></div>
           <button type="button" id="submit">
             Submit
           </button>
