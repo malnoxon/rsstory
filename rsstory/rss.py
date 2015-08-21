@@ -76,7 +76,7 @@ def archive_to_rss(url, time_between_posts, title, recaptcha_answer, ip):
     log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
     if captcha_response.is_valid:
         log.info("Captcha response verified as valid")
-        time_between = datetime.timedelta(minutes=int(time_between_posts))
+        time_between = datetime.timedelta(days=int(time_between_posts))
         rss_items = []
         url_data = []
         links = scrape(url)

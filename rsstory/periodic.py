@@ -9,9 +9,8 @@ def setup_cron(fpath, time_between):
     tab = CronTab(user=True)
     cmd = os.path.join(os.getcwd(), 'venv', 'bin', 'python') + ' ' + os.path.join(os.getcwd(), 'rsstory', 'periodic.py') + ' ' + fpath
     cron_job = tab.new(cmd)
-    minutes_between = time_between.total_seconds() / 60.0
-    cron_job.minute.every(minutes_between)
-    cron_job.comment = 'Job for {} at interval (minutes) {}'.format(fpath, minutes_between)
+    cron_job.day.every(time_between.days)
+    cron_job.comment = 'Job for {} at interval (days) {}'.format(fpath, time_between.days)
     tab.write()
 
     #TODO: remove the job once no longer needed
