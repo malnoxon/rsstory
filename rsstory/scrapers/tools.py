@@ -23,7 +23,7 @@ def clean_url(url):
     '''Removes protocol from url and ensures a trailing slash exists'''
     url = url.replace("http://", "").replace("https://", "")
     if url[-1] != "/":
-        url.append("/")
+        url += "/"
 
     return url
 

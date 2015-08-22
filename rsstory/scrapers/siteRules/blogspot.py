@@ -4,6 +4,9 @@ import certifi
 from tld import get_tld
 import re
 import rsstory.scrapers.tools as tools
+import logging
+
+log = logging.getLogger(__name__)
 
 http = urllib3.PoolManager(
         cert_reqs='CERT_REQUIRED',
@@ -40,6 +43,7 @@ def get_monthly_archive_urls(links, page_url):
 
 def get_post_from_month(month_url):
     '''Returns the individual posts from the input monthly archive url'''
+    log.debug("Getting posts from month url: {}".format(month_url))
     try:
         r = http.request('GET', month_url)
     except urllib3.exceptions.SSLError as e:
@@ -54,7 +58,7 @@ def get_post_from_month(month_url):
     post_links = []
     for link in links:
         try:
-            url = link.attrs['href']
+            url = tools.clean_url(link.attrs['href'])
             match = url.startswith(tools.clean_url(month_url_base) + year + "/" + month + "/")
             if match:
                 post_links.append(link)
@@ -63,6 +67,7 @@ def get_post_from_month(month_url):
             pass
 
     post_links.reverse() # Reverse the order to get oldest posts first
+    log.debug("Posts from month url: {} are \n {}".format(month_url, post_links))
     return post_links
 
 def remove_duplicates(links):
