@@ -9,7 +9,7 @@ def setup_cron(fpath, time_between):
     tab = CronTab(user=True)
     cmd = os.path.join(os.getcwd(), 'venv', 'bin', 'python') + ' ' + os.path.join(os.getcwd(), 'rsstory', 'periodic.py') + ' ' + fpath
     cron_job = tab.new(cmd)
-    cron_job.day.every(time_between.days)
+    cron_job.every(time_between.days).dom()
     cron_job.comment = 'Job for {} at interval (days) {}'.format(fpath, time_between.days)
     tab.write()
 
