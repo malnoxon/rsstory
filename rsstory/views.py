@@ -13,9 +13,11 @@ def home(request):
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    xml_feed, preview_page = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.remote_addr)
+    xml_feed, preview_page, invalid_time_between = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.remote_addr)
+    if invalid_time_between:
+        return {"rss": "Error", "error_msg": "Error: Invalid time between posts entered, please enter the value as a whole number of days"}
     if xml_feed == False and preview_page == False:
-        return {"rss": "Error"}
+        return {"rss": "Unknown Error"}
     return {"rss": "/static/feeds/" + xml_feed + ".xml", "preview": "/static/previews/" + preview_page}
 
 @view_config(route_name='archive_fails', renderer='archive_fails.pt')

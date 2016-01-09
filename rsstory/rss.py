@@ -36,7 +36,6 @@ def write_rss(rss_items, url, archive_id, title=None):
         title = "RSStory: {}".format(url)
     description = "RSStory feed for {}".format(url)
         
-    # import pdb; pdb.set_trace()
     rss = PyRSS2Gen.RSS2(
             title = title,
             link = url,
@@ -63,46 +62,53 @@ def write_preview_feed(rss_items, url, title, feed_id):
     return fname
 
 def archive_to_rss(url, time_between_posts, title, recaptcha_answer, ip):
-    log.info("Beginning archive_to_rss()")
-    key = ""
     try:
-        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'recaptcha_key_secret.key'), 'r') as f:
-            key = f.readline()
+        log.info("Beginning archive_to_rss()")
+        key = ""
+        try:
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'recaptcha_key_secret.key'), 'r') as f:
+                key = f.readline()
+        except:
+            log.error("The file containing the secret key was not located")
+            return (False, False, False)
+            
+        captcha_response = submit(remote_ip=ip, secret_key=key, response=recaptcha_answer)
+        log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
+        if captcha_response.is_valid:
+            log.info("Captcha response verified as valid")
+            time_between = datetime.timedelta(days=int(time_between_posts))
+            rss_items = []
+            url_data = []
+            links = scrape(url)
+            for i in links:
+                ln = i.attrs['href']
+                ln = urllib.parse.urljoin(url, ln)
+                if len(i.contents) > 0:
+                    ti = str(i.contents[0])
+                else:
+                    ti = "Unknown"
+
+                url_data.append((ln, ti))
+
+            #have to add delay maybe.
+            gen_pages(rss_items, url_data, time_between)
+            archive_id = SystemRandom().getrandbits(512)
+            fname = "rssitems{}.p".format(archive_id)
+            fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
+            pickle.dump((rss_items, url, title), open(fpath, "wb"))
+            rss_feed_filename = write_rss(rss_items, url, archive_id, title=title)
+            periodic.setup_cron(fpath, time_between)
+            preview_feed_filename = write_preview_feed(rss_items, url, title, archive_id)
+            return (rss_feed_filename, preview_feed_filename, False)
+        else:
+            log.error("Invalid captcha entered")
+            return (False, False, False)
+    except ValueError as e:
+        log.error("archive_to_rss ValueError:: {}".format(str(e)))
+        return (False, False, True)
     except:
-        log.error("The file containing the secret key was not located")
-        return (False, False)
-        
-    captcha_response = submit(remote_ip=ip, secret_key=key, response=recaptcha_answer)
-    log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
-    if captcha_response.is_valid:
-        log.info("Captcha response verified as valid")
-        time_between = datetime.timedelta(days=int(time_between_posts))
-        rss_items = []
-        url_data = []
-        links = scrape(url)
-        for i in links:
-            ln = i.attrs['href']
-            ln = urllib.parse.urljoin(url, ln)
-            if len(i.contents) > 0:
-                ti = str(i.contents[0])
-            else:
-                ti = "Unknown"
-
-            url_data.append((ln, ti))
-
-        #have to add delay maybe.
-        gen_pages(rss_items, url_data, time_between)
-        archive_id = SystemRandom().getrandbits(512)
-        fname = "rssitems{}.p".format(archive_id)
-        fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
-        pickle.dump((rss_items, url, title), open(fpath, "wb"))
-        rss_feed_filename = write_rss(rss_items, url, archive_id, title=title)
-        periodic.setup_cron(fpath, time_between)
-        preview_feed_filename = write_preview_feed(rss_items, url, title, archive_id)
-        return (rss_feed_filename, preview_feed_filename)
-    else:
-        log.error("Invalid captcha entered")
-        return (False, False)
+        log.error("Archive to RSS had an error")
+        return (False, False, False)
 
 def report_archive_fail(url, comments, ip, recaptcha_answer):
     log.info("Beginning report_archive_fail")
