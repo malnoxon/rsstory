@@ -7,6 +7,11 @@ from norecaptcha3.captcha import submit
 from random import SystemRandom
 import logging
 
+from .models import (
+        DBSession,
+        Feed,
+        )
+
 log = logging.getLogger(__name__)
 
 def gen_pages(items, data_list, time_between):
@@ -55,6 +60,8 @@ def write_preview_feed(rss_items, url, title, feed_id):
     f.write("Title: {}\n".format(title))
     f.write("URL: {}\n".format(url))
     f.write("ITEMS: \n")
+    feed = Feed(name=title, data="TESTY1")
+    DBSession.add(feed)
     for i, item in enumerate(rss_items):
         f.write(str(i) + ":\t" + item.title + " " + item.link + "\n")
 

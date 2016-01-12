@@ -3,7 +3,81 @@ from pyramid.response import Response
 from pyramid.view import view_config
 import logging
 
-log = logging.getLogger(__name__)
+#####################
+# import cgi
+# import re
+# from docutils.core import publish_parts
+#
+# from pyramid.httpexceptions import (
+#         HTTPFound,
+#         HTTPNotFound,
+#         )
+##############################
+
+from sqlalchemy.exc import DBAPIError
+
+from .models import (
+    DBSession,
+    Feed,
+    )
+
+#####################
+# regular expression used to find WikiWords
+# wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
+#
+# @view_config(route_name='view_wiki')
+# def view_wiki(request):
+#     return HTTPFound(location = request.route_url('view_page',
+#                                                   pagename='FrontFeed'))
+#
+# @view_config(route_name='view_page')
+# def view_page(request):
+#     pagename = request.matchdict['pagename']
+#     page = DBSession.query(Feed).filter_by(name=pagename).first()
+#     if page is None:
+#         return HTTPNotFound('No such page')
+#
+#     def check(match):
+#         word = match.group(1)
+#         exists = DBSession.query(Feed).filter_by(name=word).all()
+#         if exists:
+#             view_url = request.route_url('view_page', pagename=word)
+#             return '<a href="%s">%s</a>' % (view_url, cgi.escape(word))
+#         else:
+#             add_url = request.route_url('add_page', pagename=word)
+#             return '<a href="%s">%s</a>' % (add_url, cgi.escape(word))
+#
+#     content = publish_parts(page.data, writer_name='html')['html_body']
+#     content = wikiwords.sub(check, content)
+#     edit_url = request.route_url('edit_page', pagename=pagename)
+#     return dict(page=page, content=content, edit_url=edit_url)
+#
+# @view_config(route_name='add_page')
+# def add_page(request):
+#     pagename = request.matchdict['pagename']
+#     if 'form.submitted' in request.params:
+#         body = request.params['body']
+#         page = Feed(name=pagename, data=body)
+#         DBSession.add(page)
+#         return HTTPFound(location = request.route_url('view_page',
+#                                                       pagename=pagename))
+#     save_url = request.route_url('add_page', pagename=pagename)
+#     page = Feed(name='', data='')
+#     return dict(page=page, save_url=save_url)
+#
+# @view_config(route_name='edit_page')
+# def edit_page(request):
+#     pagename = request.matchdict['pagename']
+#     page = DBSession.query(Feed).filter_by(name=pagename).one()
+#     if 'form.submitted' in request.params:
+#         page.data = request.params['body']
+#         DBSession.add(page)
+#         return HTTPFound(location = request.route_url('view_page',
+#                                                       pagename=pagename))
+#     return dict(
+#         page=page,
+#         save_url = request.route_url('edit_page', pagename=pagename),
+#         )
 
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
