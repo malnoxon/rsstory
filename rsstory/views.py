@@ -13,9 +13,9 @@ def home(request):
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    xml_feed, preview_page, invalid_time_between = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.remote_addr)
-    if invalid_time_between:
-        return {"rss": "Error", "error_msg": "Error: Invalid time between posts entered, please enter the value as a whole number of days"}
+    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.remote_addr)
+    if invalid_input:
+        return {"rss": "Error", "error_msg": "Error: A bad input value was entered. Be sure that the archive url is correct and that the time between posts is entered as a whole number of days (not as a decimal). If the values are actually correct, please leave a bug report at https://github.com/Daphron/rsstory"}
     if xml_feed == False and preview_page == False:
         return {"rss": "Unknown Error"}
     return {"rss": "/static/feeds/" + xml_feed + ".xml", "preview": "/static/previews/" + preview_page}
