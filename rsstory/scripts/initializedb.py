@@ -9,9 +9,10 @@ from pyramid.paster import (
     setup_logging,
     )
 
-from ..models import (
+from ..models import ( #Order matters?
     DBSession,
     Feed,
+    Page,
     Base,
     )
 
@@ -32,6 +33,6 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
-    with transaction.manager:
-        model = Feed(name='FrontPage', data='This is the front page')
-        DBSession.add(model)
+    # with transaction.manager:
+    #     model = Feed(name='FrontPage', archive_url='dummy.url.com/', time_between_posts=123456789, time_created=0)
+    #     DBSession.add(model)

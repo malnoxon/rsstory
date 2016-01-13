@@ -1,6 +1,7 @@
 from sqlalchemy import (
+    # BigInteger,
     Column,
-    Index,
+    ForeignKey,
     Integer,
     Text,
     )
@@ -10,6 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
+    # relationship,
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -17,17 +19,24 @@ from zope.sqlalchemy import ZopeTransactionExtension
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
-
-# class MyModel(Base):
-#     __tablename__ = 'models'
-#     id = Column(Integer, primary_key=True)
-#     name = Column(Text)
-#     value = Column(Integer)
-
 class Feed(Base):
     __tablename__ = 'feeds'
-    id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True)
-    data = Column(Text)
+    id = Column(Text, primary_key=True)
+    name = Column(Text)
+    archive_url = Column(Text, nullable=False)
+    time_between_posts = Column(Integer, nullable=False)
+    time_created = Column(Integer, nullable=False)
+    user = Column(Text)
 
-# Index('my_index', MyModel.name, unique=True, mysql_length=255)
+""" A Page represents one post on the website. There will be many of these
+for each feed"""
+class Page(Base):
+    __tablename__ = 'pages'
+    archive_url = Column(Text, ForeignKey('feeds.archive_url'), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(Text)
+    page_url = Column(Text)
+
+    ##############
+    # feed = Feed(name=title, data="TESTY1")
+    # DBSession.add(feed)
