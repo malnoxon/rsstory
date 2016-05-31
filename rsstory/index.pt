@@ -29,7 +29,7 @@
               </td>
               <td>
                 <form>
-                  <input type="text" name="title" id="title" ></input>
+                  <input type="text" name="title" id="title" value="XKCD Archive" ></input>
                 </form>
               </td>
             </tr>
@@ -39,7 +39,7 @@
               </td>
               <td>
                 <form>
-                  <input type="text" name="archive" id="archive" ></input>
+                  <input type="text" name="archive" id="archive" value="https://xkcd.com/archive/"></input>
                 </form>
               </td>
             </tr>
@@ -49,7 +49,7 @@
               </td>
               <td>
                 <form>
-                  <input type="text" name="time" id="time"></input>
+                  <input type="text" name="time" id="time" value="1"></input>
                   <input type="hidden" name="captcha" id="captcha">
                 </form>
               </td>

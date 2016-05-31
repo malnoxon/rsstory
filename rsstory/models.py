@@ -16,7 +16,7 @@ from sqlalchemy.orm import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension(keep_session=True)))
 Base = declarative_base()
 
 class Feed(Base):

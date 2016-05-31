@@ -1,12 +1,14 @@
 import datetime, PyRSS2Gen, sys, pickle
 from rsstory.scraping import *
 import rsstory.periodic as periodic
+import pyramid.threadlocal
 import urllib.parse
 import os
 from norecaptcha3.captcha import submit
 from random import SystemRandom
 import logging
 import time
+import transaction
 
 from .models import (
         DBSession,
@@ -16,7 +18,7 @@ from .models import (
 
 log = logging.getLogger(__name__)
 
-''' Gets the row of the table if it exists, creates it if it doesn't'''
+''' Gets the row of the table, creating it first if it doesn't exit'''
 def get_or_create_row(table, **kwargs):
     row = DBSession.query(table).filter_by(**kwargs).first()
     if row:
@@ -24,7 +26,8 @@ def get_or_create_row(table, **kwargs):
     else:
         row = table(**kwargs)
         DBSession.add(row)
-        DBSession.commit()
+        transaction.commit()
+        # DBSession.commit()
         return (row, True)
 
 def gen_pages(items, data_list, time_between, archive_url):
@@ -102,8 +105,13 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
             
         captcha_response = submit(remote_ip=ip, secret_key=key, response=recaptcha_answer)
         log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
-        if captcha_response.is_valid:
-            log.info("Captcha response verified as valid")
+        registry = pyramid.threadlocal.get_current_registry()
+
+        if captcha_response.is_valid or registry.settings['debug_settings']:
+            if captcha_response.is_valid:
+                log.info("Captcha response verified as valid")
+            elif registry.settings['debug_settings']:
+                log.info("Captcha response not needed due to debug_settings=True")
             time_between = datetime.timedelta(days=int(time_between_posts))
             rss_items = []
             url_data = []
@@ -126,8 +134,11 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
             pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
             # will need to be changed when switch over to units smaller than days for time_between
             # feed = Feed(id=archive_id, name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
-            feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
-            DBSession.add(feed)
+            with transaction.manager:
+                feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
+                DBSession.add(feed)
+                # DBSession.commit()
+                transaction.commit()
             rss_feed_filename = write_rss(rss_items, archive_url, archive_id, title=title)
             periodic.setup_cron(fpath, time_between)
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)

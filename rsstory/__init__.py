@@ -1,5 +1,6 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
+from pyramid.settings import asbool
 
 from .models import (
     DBSession,
@@ -10,6 +11,10 @@ from .models import (
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    debug_settings = asbool(settings.get(
+        'debug_settings', 'false'
+        ))
+    settings['debug_settings'] = debug_settings
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
