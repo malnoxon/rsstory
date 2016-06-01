@@ -27,7 +27,6 @@ def get_or_create_row(table, **kwargs):
         row = table(**kwargs)
         DBSession.add(row)
         transaction.commit()
-        # DBSession.commit()
         return (row, True)
 
 def gen_pages(items, data_list, time_between, archive_url):
@@ -97,8 +96,8 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
         log.info("Beginning archive_to_rss()")
         key = ""
         try:
-            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'recaptcha_key_secret.key'), 'r') as f:
-                key = f.readline()
+            with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'secrets.keys'), 'r') as f:
+                key = f.readline().split()[1]
         except:
             log.error("The file containing the secret key was not located")
             return (False, False, False)

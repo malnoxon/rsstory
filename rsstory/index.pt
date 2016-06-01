@@ -1,6 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
+<ul>
+  <li><a class="active" href="">Home</a></li>
+  <li><a href="archive_fails">Report Error</a></li>
+  <li><a href="https://github.com/Daphron/rsstory">Github</a></li>
+  <li style="float:right"><a href="login">Login</a></li>
+  <!-- <li><a href="#news">News</a></li> -->
+  <!-- <li><a href="#contact">Contact</a></li> -->
+  <!-- <li><a href="#about">About</a></li> -->
+</ul>
+
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
     <link rel="stylesheet" href="${request.static_url('rsstory:static/style.css')}">

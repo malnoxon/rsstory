@@ -25,6 +25,8 @@ def main(global_config, **settings):
     config.add_route('feed', '/feed')
     config.add_route('archive_fails', '/archive_fails')
     config.add_route('report_archive_fails', '/archive_fails/report')
+    config.add_route('login', '/login/{provider_name}')
+    config.add_route('login_page', '/login')
     # config.add_route('view_wiki', '/')
     # config.add_route('view_page', '/{pagename}')
     # config.add_route('add_page', '/add_page/{pagename}')

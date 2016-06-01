@@ -1,7 +1,16 @@
 import rsstory.rss as rss
 from pyramid.response import Response
 from pyramid.view import view_config
+from wsgiref.simple_server import make_server
+from pyramid.config import Configurator
+from authomatic import Authomatic
+from authomatic.adapters import WebObAdapter
+
 import logging
+import os
+import binascii
+import random
+import string
 
 #####################
 # import cgi
@@ -20,6 +29,10 @@ from .models import (
     DBSession,
     Feed,
     )
+
+from config import CONFIG
+
+authomatic = Authomatic(config=CONFIG, secret=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(4096)))
 
 #####################
 # regular expression used to find WikiWords
@@ -82,6 +95,48 @@ from .models import (
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
     return {}
+
+@view_config(route_name='login_page', renderer='index.pt')
+def login_page(request):
+    return Response('''
+        Login with <a href="login/google">Google</a>.<br />
+        Unsupported: <form action="login/oi">
+            <input type="text" name="id" value="me.yahoo.com" />
+            <input type="submit" value="Authenticate With OpenID">
+        </form>
+    ''')
+
+
+@view_config(route_name='login', renderer='index.pt')
+def login(request):
+    # Useful:
+    # https://peterhudec.github.io/authomatic/examples/pyramid-simple.html
+    response = Response()
+    provider_name = request.matchdict.get('provider_name')
+    result = authomatic.login(WebObAdapter(request, response), provider_name)
+    
+    # Do not write anything to the response if there is no result!
+    if result:
+        # If there is result, the login procedure is over and we can write to response.
+        response.write('<a href="..">Home</a>')
+        # from pprint import pprint
+        # pprint (vars(your_object))
+        
+        if result.error:
+            import pdb; pdb.set_trace();
+            response.write(u'<h2>ERROR in login: {0}</h2>'.format(result.error.message))
+        
+        elif result.user:
+            # OAuth 2.0 and OAuth 1.0a provide only limited user data on login,
+            # We need to update the user to get more info.
+            if not (result.user.name and result.user.id):
+                result.user.update()
+            
+            response.write(u'<h1>Hi {0}</h1>'.format(result.user.name))
+            response.write(u'<h2>Your id is: {0}</h2>'.format(result.user.id))
+            response.write(u'<h2>Your email is: {0}</h2>'.format(result.user.email))
+
+    return response
 
 @view_config(route_name='feed', renderer='json')
 def feed(request):
