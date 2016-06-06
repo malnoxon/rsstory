@@ -14,6 +14,7 @@ from ..models import ( #Order matters?
     Feed,
     Page,
     Base,
+    User,
     )
 
 

@@ -93,11 +93,12 @@ def write_preview_feed(rss_items, url, title, feed_id):
 
 def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip):
     try:
+        # import pdb; pdb.set_trace();
         log.info("Beginning archive_to_rss()")
         key = ""
         try:
             with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'secrets.keys'), 'r') as f:
-                key = f.readline().split()[1]
+                key = f.readline().split(",")[1]
         except:
             log.error("The file containing the secret key was not located")
             return (False, False, False)
@@ -124,12 +125,14 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
                     ti = "Unknown"
 
                 url_data.append((ln, ti))
+            log.info("Starting gen_pages()")
 
             #have to add delay maybe.
             gen_pages(rss_items, url_data, time_between, archive_url)
             archive_id = SystemRandom().getrandbits(512)
             fname = "rssitems{}.p".format(archive_id)
             fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
+            log.info("Starting pickle dump")
             pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
             # will need to be changed when switch over to units smaller than days for time_between
             # feed = Feed(id=archive_id, name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
@@ -138,9 +141,11 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
                 DBSession.add(feed)
                 # DBSession.commit()
                 transaction.commit()
+                log.info("Transaction committed")
             rss_feed_filename = write_rss(rss_items, archive_url, archive_id, title=title)
             periodic.setup_cron(fpath, time_between)
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
+            log.info("preview feed written")
             return (rss_feed_filename, preview_feed_filename, False)
         else:
             log.error("Invalid captcha entered")
@@ -150,6 +155,7 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
         return (False, False, True)
     except Exception as e:
         log.error("Archive to RSS had an error:: {}".format(str(e)))
+        import pdb; pdb.set_trace();
         return (False, False, False)
 
 def report_archive_fail(url, comments, ip, recaptcha_answer):

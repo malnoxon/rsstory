@@ -1,6 +1,5 @@
 import rsstory.rss as rss
 from pyramid.response import Response
-from pyramid.view import view_config
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from authomatic import Authomatic
@@ -17,11 +16,24 @@ import string
 # import re
 # from docutils.core import publish_parts
 #
-# from pyramid.httpexceptions import (
-#         HTTPFound,
-#         HTTPNotFound,
-#         )
-##############################
+from pyramid.httpexceptions import (
+        HTTPFound,
+        HTTPNotFound,
+        )
+
+from pyramid.security import (
+        remember,
+        forget,
+        )
+
+from pyramid.view import (
+        view_config,
+        view_defaults,
+        forbidden_view_config,
+        )
+
+
+from .security import USERS
 
 from sqlalchemy.exc import DBAPIError
 
@@ -94,18 +106,21 @@ authomatic = Authomatic(config=CONFIG, secret=''.join(random.SystemRandom().choi
 
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
+    # import pdb; pdb.set_trace();
     return {}
 
 @view_config(route_name='login_page', renderer='index.pt')
+@forbidden_view_config(renderer='index.pt')
 def login_page(request):
     return Response('''
         Login with <a href="login/google">Google</a>.<br />
-        Unsupported: <form action="login/oi">
-            <input type="text" name="id" value="me.yahoo.com" />
-            <input type="submit" value="Authenticate With OpenID">
-        </form>
     ''')
 
+@view_config(route_name='logout', renderer='index.pt')
+def logout(request):
+    headers = forget(request)
+    url = request.route_url('home')
+    return HTTPFound(location=url, headers=headers)
 
 @view_config(route_name='login', renderer='index.pt')
 def login(request):
@@ -123,7 +138,7 @@ def login(request):
         # pprint (vars(your_object))
         
         if result.error:
-            import pdb; pdb.set_trace();
+            # import pdb; pdb.set_trace();
             response.write(u'<h2>ERROR in login: {0}</h2>'.format(result.error.message))
         
         elif result.user:
@@ -131,11 +146,24 @@ def login(request):
             # We need to update the user to get more info.
             if not (result.user.name and result.user.id):
                 result.user.update()
-            
-            response.write(u'<h1>Hi {0}</h1>'.format(result.user.name))
-            response.write(u'<h2>Your id is: {0}</h2>'.format(result.user.id))
-            response.write(u'<h2>Your email is: {0}</h2>'.format(result.user.email))
 
+            headers = remember(request, result.user.id)
+
+            
+            response.headerlist.extend(headers)
+            # response.write(u'<h1>Hi {0}</h1>'.format(result.user.name))
+            # response.write(u'<h2>Your id is: {0}</h2>'.format(result.user.id))
+            # response.write(u'<h2>Your email is: {0}</h2>'.format(result.user.email))
+
+            url = request.route_url('home')
+            return HTTPFound(location=url, headers=headers)
+
+    return response
+
+@view_config(route_name='howdy', permission='edit')
+def howdy(request):
+    response = Response()
+    response.write('HELLO THERE')
     return response
 
 @view_config(route_name='feed', renderer='json')

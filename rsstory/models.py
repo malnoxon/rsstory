@@ -26,7 +26,8 @@ class Feed(Base):
     archive_url = Column(Text, nullable=False)
     time_between_posts = Column(Integer, nullable=False)
     time_created = Column(Integer, nullable=False)
-    user = Column(Text)
+    user = Column(ForeignKey('users.id'))
+
 
 """ A Page represents one post on the website. There will be many of these
 for each feed"""
@@ -36,6 +37,11 @@ class Page(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     page_url = Column(Text)
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, nullable=False)
 
     ##############
     # feed = Feed(name=title, data="TESTY1")
