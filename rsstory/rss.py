@@ -57,23 +57,53 @@ def gen_pages(items, data_list, time_between, archive_url):
         pubDate = curr_time
         )
     items.append(last_item)
-    # index += 1
-    # last_page = Page(id=index, name=last_item.title, page_url=last_item.link, archive_url=archive_url)
-    # DBSession.add(last_page)
 
-def write_rss(rss_items, url, archive_id, title=None):
-    if title == None or title == "":
-        title = "RSStory: {}".format(url)
-    description = "RSStory feed for {}".format(url)
+''' Takes the given rss_data urls and page titles and writes to the page 
+for the given feed object. rss_data is assumed to be ORDERED'''
+def write_rss(feed, rss_data):
+    # import pdb; pdb.set_trace();
+    if feed.name == None or feed.name == "":
+        feed.name = "RSStory: {}".format(feed.archive_url)
+    description = "RSStory feed for {}".format(feed.archive_url)
+
+    # curr_time = datetime.datetime.now()
+    curr_time = datetime.datetime.fromtimestamp(feed.time_created)
+    time_between = datetime.timedelta(feed.time_between_posts)
+    rss_items = []
+    index = 0
+    while rss_data:
+        data = rss_data.pop(0)
+        page = DBSession.query(Page).filter_by(id=index, name=data[1], page_url=data[0], archive_url=feed.archive_url).first()
+
+        rss_items.append(PyRSS2Gen.RSSItem(
+            title = page.name,
+            link = page.page_url,
+            description = page.page_url,
+            guid = PyRSS2Gen.Guid(page.page_url),
+            pubDate = curr_time
+            ))
+        curr_time += time_between
+        index += 1
+
+    #TODO: add end of archive message when we've checked and seen the archive is done instead of now
+    # End of archive message
+    # last_item = PyRSS2Gen.RSSItem(
+    #     title = "Archive End",
+    #     description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
+    #     link = "https://github.com/Daphron/rsstory",
+    #     guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
+    #     pubDate = curr_time
+    #     )
+    # rss_items.append(last_item)
         
     rss = PyRSS2Gen.RSS2(
-            title = title,
-            link = url,
-            description = description,
+            title = feed.name,
+            link = feed.archive_url,
+            description = feed.archive_url,
             lastBuildDate = datetime.datetime.now(),
-            items = filter(lambda x: x.pubDate < datetime.datetime.now(), rss_items)
-                )
-    s = str(archive_id)
+            items = rss_items
+            )
+    s = str(feed.id)
     f = open(os.path.join(os.path.abspath(os.path.dirname(__file__)),'static', 'feeds', s+".xml"), "w+")
     rss.write_xml(f)
     return s
@@ -128,22 +158,20 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
             log.info("Starting gen_pages()")
 
             #have to add delay maybe.
-            gen_pages(rss_items, url_data, time_between, archive_url)
+            gen_pages(rss_items, url_data[:], time_between, archive_url)
             archive_id = SystemRandom().getrandbits(512)
-            fname = "rssitems{}.p".format(archive_id)
-            fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
-            log.info("Starting pickle dump")
-            pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
-            # will need to be changed when switch over to units smaller than days for time_between
-            # feed = Feed(id=archive_id, name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
+            # fname = "rssitems{}.p".format(archive_id)
+            # fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
+            # log.info("Starting pickle dump")
+            # pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
             with transaction.manager:
                 feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
                 DBSession.add(feed)
                 # DBSession.commit()
                 transaction.commit()
                 log.info("Transaction committed")
-            rss_feed_filename = write_rss(rss_items, archive_url, archive_id, title=title)
-            periodic.setup_cron(fpath, time_between)
+            rss_feed_filename = write_rss(feed, url_data[:1])
+            # periodic.setup_cron(fpath, time_between)
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
             log.info("preview feed written")
             return (rss_feed_filename, preview_feed_filename, False)
@@ -155,7 +183,8 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
         return (False, False, True)
     except Exception as e:
         log.error("Archive to RSS had an error:: {}".format(str(e)))
-        import pdb; pdb.set_trace();
+        print(sys.exc_info()[0], os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1], sys.exc_info()[2].tb_lineno)
+        import pdb; pdb.post_mortem(sys.exc_info()[2]);
         return (False, False, False)
 
 def report_archive_fail(url, comments, ip, recaptcha_answer):

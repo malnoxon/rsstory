@@ -13,12 +13,11 @@ def setup_cron(fpath, time_between):
     cron_job.comment = 'Job for {} at interval (days) {}'.format(fpath, time_between.days)
     tab.write()
 
-    #TODO: remove the job once no longer needed
-
 def update_feed(fpath):
-    rss_items, url, title = pickle.load(open(fpath, "rb"))
-    page_num = re.findall(r'\d+', fpath)[-1]
-    write_rss(rss_items, url, archive_id=page_num, title=title)
+    pass # TODO: get it updating the pages regularly using the database store
+    # rss_items, url, title = pickle.load(open(fpath, "rb"))
+    # page_num = re.findall(r'\d+', fpath)[-1]
+    # write_rss(rss_items, url, archive_id=page_num, title=title)
 
 if __name__ == "__main__":
     update_feed(sys.argv[1])

@@ -1,4 +1,5 @@
 import rsstory.rss as rss
+import rsstory.security as security
 from pyramid.response import Response
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
@@ -107,7 +108,7 @@ authomatic = Authomatic(config=CONFIG, secret=''.join(random.SystemRandom().choi
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
     # import pdb; pdb.set_trace();
-    return {}
+    return dict(logged_in=request.authenticated_userid)
 
 @view_config(route_name='login_page', renderer='index.pt')
 @forbidden_view_config(renderer='index.pt')
