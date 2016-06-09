@@ -8,6 +8,7 @@
   <li><a href="howdy">Howdy</a></li>
   <li tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
   <li tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
+  <li tal:condition="user_email" style="float:right"><a href="${request.application_url}/logout">${user_email}</a></li>
 </ul>
 
   <head>
@@ -69,10 +70,6 @@
             Submit
           </button>
         </div>
-      </div>
-      <div id="footer">
-          <a href="archive_fails">Report URLs that RSStory does not generate the correct feed on </a>
-        <p> Development of RSStory done at <a href="https://github.com/Daphron/rsstory">https://github.com/Daphron/rsstory</a><p>
       </div>
     </div>
   </body>

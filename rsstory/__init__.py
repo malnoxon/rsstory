@@ -4,8 +4,6 @@ from pyramid.settings import asbool
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 
-from .security import groupfinder
-
 from .models import (
     DBSession,
     Base,
@@ -25,7 +23,7 @@ def main(global_config, **settings):
 
     # Security
     authn_policy = AuthTktAuthenticationPolicy(
-            settings['rsstory.secret'], callback=groupfinder,
+            settings['rsstory.secret'],
             hashalg='sha512'
             )
     authz_policy = ACLAuthorizationPolicy()

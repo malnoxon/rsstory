@@ -33,15 +33,19 @@ class Feed(Base):
 for each feed"""
 class Page(Base):
     __tablename__ = 'pages'
-    archive_url = Column(Text, ForeignKey('feeds.archive_url'), primary_key=True)
+    archive_url = Column(Text)
     id = Column(Integer, primary_key=True)
     name = Column(Text)
     page_url = Column(Text)
+    description = Column(Text)
+    
 
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
+    google_id = Column(Text, unique=True)
+    email = Column(Text)
 
     ##############
     # feed = Feed(name=title, data="TESTY1")

@@ -1,5 +1,4 @@
 import rsstory.rss as rss
-import rsstory.security as security
 from pyramid.response import Response
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
@@ -11,6 +10,7 @@ import os
 import binascii
 import random
 import string
+import transaction
 
 #####################
 # import cgi
@@ -33,14 +33,12 @@ from pyramid.view import (
         forbidden_view_config,
         )
 
-
-from .security import USERS
-
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
     Feed,
+    User,
     )
 
 from config import CONFIG
@@ -108,7 +106,13 @@ authomatic = Authomatic(config=CONFIG, secret=''.join(random.SystemRandom().choi
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
     # import pdb; pdb.set_trace();
-    return dict(logged_in=request.authenticated_userid)
+    # TODO: actually add users to database on login
+    user = DBSession.query(User).filter_by(google_id=request.authenticated_userid).first()
+    user_email = None
+    if user:
+        user_email = user.email
+    return dict(logged_in=request.authenticated_userid,
+                user_email=user_email)
 
 @view_config(route_name='login_page', renderer='index.pt')
 @forbidden_view_config(renderer='index.pt')
@@ -149,7 +153,12 @@ def login(request):
                 result.user.update()
 
             headers = remember(request, result.user.id)
-
+            row = DBSession.query(User).filter_by(google_id=result.user.id).first()
+            if not row:
+                user_id = DBSession.query(User).count()
+                row = User(id=user_id, google_id=result.user.id, name="TMP", email=result.user.email)
+                DBSession.add(row)
+                transaction.commit()
             
             response.headerlist.extend(headers)
             # response.write(u'<h1>Hi {0}</h1>'.format(result.user.name))
@@ -181,7 +190,7 @@ def feed(request):
 @view_config(route_name='archive_fails', renderer='archive_fails.pt')
 def archive_fails(request):
     # rss.report_archive_fail(request.json_body['url'], request.json_body['comments'])
-    return {}
+    return dict(logged_in=request.authenticated_userid)
     # return {"success": True}
 
 @view_config(route_name='report_archive_fails', renderer='json')

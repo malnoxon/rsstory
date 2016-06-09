@@ -26,7 +26,7 @@ def get_or_create_row(table, **kwargs):
     else:
         row = table(**kwargs)
         DBSession.add(row)
-        transaction.commit()
+        transaction.commit() # TODO: can we do this less frequently?
         return (row, True)
 
 def gen_pages(items, data_list, time_between, archive_url):
@@ -46,17 +46,6 @@ def gen_pages(items, data_list, time_between, archive_url):
             ))
         curr_time += time_between
         index += 1
-
-    #TODO: add end of archive message when we've checked and seen the archive is done instead of now
-    # End of archive message
-    last_item = PyRSS2Gen.RSSItem(
-        title = "Archive End",
-        description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
-        link = "https://github.com/Daphron/rsstory",
-        guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
-        pubDate = curr_time
-        )
-    items.append(last_item)
 
 ''' Takes the given rss_data urls and page titles and writes to the page 
 for the given feed object. rss_data is assumed to be ORDERED'''
@@ -171,6 +160,7 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
                 transaction.commit()
                 log.info("Transaction committed")
             rss_feed_filename = write_rss(feed, url_data[:1])
+            # log.info("rss_feed_filename is: {}".format(rss_feed_filename))
             # periodic.setup_cron(fpath, time_between)
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
             log.info("preview feed written")
