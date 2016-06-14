@@ -46,5 +46,6 @@ def main(global_config, **settings):
     # config.add_route('add_page', '/add_page/{pagename}')
     # config.add_route('edit_page', '/{pagename}/edit_page')
     config.add_static_view(name='static', path='rsstory:static')
+    # config.add_static_view(name='private_static', path='rsstory:static')
     config.scan('.views')
     return config.make_wsgi_app()

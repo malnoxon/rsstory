@@ -15,10 +15,11 @@ $(document).ready(function() {
     var elem = document.getElementById("captcha");
     elem.value = grecaptcha.getResponse();
     grecaptcha.reset();
+    var url =  window.location.protocol + "//" + window.location.host + window.location.pathname;
 
     $.ajax({
       type: "POST",
-      url: window.location.href + "feed",
+      url: url + "feed",
       data: window.JSON.stringify({
         title: $('#title').val(),
         url: $('#archive').val(),
@@ -35,7 +36,7 @@ $(document).ready(function() {
         }
         data = window.JSON.parse(data);
         if (status === "success" && (! (data.rss === 'Error'))) {
-          $('#main_body').append("<span id='rss_output'><a href=" + window.location.href.slice(0,-1) + data.rss + "> <u>Follow this link to your feed</u></a> or <a rss_output' href=" + window.location.href.slice(0,-1) + data.preview + " target='_blank'> <u>check your new feed for correctness.</u></a></span>");
+          $('#main_body').append("<span id='rss_output'><a href=" + url.slice(0,-1) + data.rss + "> <u>Follow this link to your feed</u></a> or <a rss_output' href=" + url.slice(0,-1) + data.preview + " target='_blank'> <u>check your new feed for correctness.</u></a></span>");
         } else {
           $('#main_body').append('<span id="rss_output"> ' + data.error_msg + '</span>');
         }

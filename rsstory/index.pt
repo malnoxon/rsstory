@@ -66,6 +66,7 @@
             </tr>
           </table>
             <div class="g-recaptcha" data-sitekey="6LcnlgsTAAAAAGmVA_COh_S6FDDtnEUJY9aL8Ulf"></div>
+            <div tal:condition="not: logged_in">WARNING: If you create a feed while not logged in you will NOT be able to manage it later!</div>
           <button type="button" id="submit">
             Submit
           </button>
