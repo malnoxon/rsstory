@@ -110,7 +110,7 @@ def write_preview_feed(rss_items, url, title, feed_id):
     f.close()
     return fname
 
-def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip):
+def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, user_id, ip):
     try:
         log.info("Beginning archive_to_rss()")
         key = ""
@@ -153,7 +153,7 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, ip)
             # log.info("Starting pickle dump")
             # pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
             with transaction.manager:
-                feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=None)
+                feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.days, time_created=int(time.time()), user=user_id)
                 DBSession.add(feed)
                 # DBSession.commit()
                 transaction.commit()

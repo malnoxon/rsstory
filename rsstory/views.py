@@ -1,4 +1,5 @@
 import rsstory.rss as rss
+import rsstory.user
 from pyramid.response import Response
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
@@ -11,6 +12,7 @@ import binascii
 import random
 import string
 import transaction
+import datetime
 
 from pyramid.httpexceptions import (
         HTTPFound,
@@ -38,16 +40,17 @@ from .models import (
 
 from config import CONFIG
 
+log = logging.getLogger(__name__)
+
 authomatic = Authomatic(config=CONFIG, secret=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(4096)))
 
 @view_config(route_name='home', renderer='index.pt')
 def home(request):
-    # TODO: actually add users to database on login
-    user = DBSession.query(User).filter_by(google_id=request.authenticated_userid).first()
+    user = DBSession.query(User).filter_by(id=request.authenticated_userid).first()
     user_email = None
     if user:
         user_email = user.email
-    return dict(logged_in=request.authenticated_userid,
+    return dict(logged_in=(request.authenticated_userid != None),
                 user_email=user_email)
 
 @view_config(route_name='login_page', renderer='index.pt')
@@ -87,14 +90,17 @@ def login(request):
             if not (result.user.name and result.user.id):
                 result.user.update()
 
-            headers = remember(request, result.user.id)
             row = DBSession.query(User).filter_by(google_id=result.user.id).first()
             if not row:
                 user_id = DBSession.query(User).count()
                 row = User(id=user_id, google_id=result.user.id, name="TMP", email=result.user.email)
                 DBSession.add(row)
                 transaction.commit()
-            
+            else:
+                user_id = row.id
+
+            headers = remember(request, user_id)
+            log.debug("user id: {}".format(user_id))
             response.headerlist.extend(headers)
             # response.write(u'<h1>Hi {0}</h1>'.format(result.user.name))
             # response.write(u'<h2>Your id is: {0}</h2>'.format(result.user.id))
@@ -111,11 +117,36 @@ def howdy(request):
     response.write('HELLO THERE')
     return response
 
+@view_config(route_name='my_feeds', renderer='feed_management.pt')
+def my_feeds(request):
+    feeds = rsstory.user.get_user_feeds(request.authenticated_userid)
+    titles = []
+    archive_urls = []
+    time_created = []
+    time_between_posts = []
+    urls = []
+    preview_feeds = []
+    for f in feeds:
+        titles.append(f.name)
+        archive_urls.append(f.archive_url)
+        time_created.append(datetime.datetime.fromtimestamp(f.time_created).strftime("%Y-%m-%d %H:%M:%S"))
+        time_between_posts.append(f.time_between_posts)
+        urls.append("/static/feeds/" + f.id + ".xml")
+        preview_feeds.append("/static/previews/preview" + f.id + ".txt")
+    user = DBSession.query(User).filter_by(id=request.authenticated_userid).first()
+    user_email = None
+    if user:
+        user_email = user.email
+    return dict(logged_in=(request.authenticated_userid != None),
+                user_email=user_email,
+                feeds=zip(titles, archive_urls, time_created, time_between_posts, urls, preview_feeds))
+
+
 @view_config(route_name='feed', renderer='json')
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.remote_addr)
+    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.authenticated_userid, request.remote_addr)
     if invalid_input:
         return {"rss": "Error", "error_msg": "Error: A bad input value was entered. Be sure that the archive url is correct and that the time between posts is entered as a whole number of days (not as a decimal). If the values are actually correct, please leave a bug report at https://github.com/Daphron/rsstory"}
     if xml_feed == False and preview_page == False:
@@ -125,8 +156,9 @@ def feed(request):
 @view_config(route_name='archive_fails', renderer='archive_fails.pt')
 def archive_fails(request):
     # rss.report_archive_fail(request.json_body['url'], request.json_body['comments'])
-    return dict(logged_in=request.authenticated_userid)
+    return dict(logged_in=(request.authenticated_userid != None))
     # return {"success": True}
+
 
 @view_config(route_name='report_archive_fails', renderer='json')
 def report_archive_fails(request):

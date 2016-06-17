@@ -160,3 +160,9 @@ li a:hover:not(.active) {
     background-color: #4CAF50;
 }
 
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width:100px;
+}

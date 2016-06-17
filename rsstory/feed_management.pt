@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<ul>
+  <li><a class="active" href="/">Home</a></li>
+  <li><a href="archive_fails">Report Error</a></li>
+  <li><a href="https://github.com/Daphron/rsstory">Github</a></li>
+  <li><a href="howdy">Howdy</a></li>
+  <li tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
+  <li tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
+  <li tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
+</ul>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="${request.static_url('rsstory:static/style.css')}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+th {
+    text-align: left;
+}
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        <h1>
+          My Feeds
+        </h1>
+      </div>
+      <div id="main_content">
+          <table>
+            <tr>
+              <td>Title</td>
+              <td>Feed URL</td>
+              <td>Feed Preview</td>
+              <td>Archive URL</td>
+              <td>Time Created</td>
+              <td>Days between Posts</td>
+            </tr>
+              <tr tal:repeat="(title, archive_url, created, time_between, url, preview) feeds">
+                  <td tal:content="title">text replaced by item</td>
+                  <td><a href="${url}"><div class='ellipsis'>${url}</div></a></td>
+                  <td><a href="${preview}"><div class='ellipsis'>${preview}</div></a></td>
+                  <td><a href="${archive_url}"><div class='ellipsis'>${archive_url}</div></a></td>
+                  <td tal:content="created">text replaced by item</td>
+                  <td tal:content="time_between">text replaced by item</td>
+              </tr>
+          </table>
+            <!-- <script src="${request.static_url('rsstory:static/feed_management.js')}"></script> -->
+      </div>
+    </div>
+  </body>
+</html>
