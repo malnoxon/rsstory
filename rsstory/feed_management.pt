@@ -36,25 +36,32 @@ th {
         </h1>
       </div>
       <div id="main_content">
+        <h5>
+          *Editable
+        </h5>
           <table>
             <tr>
-              <td>Title</td>
+              <td>Title*</td>
               <td>Feed URL</td>
               <td>Feed Preview</td>
               <td>Archive URL</td>
               <td>Time Created</td>
-              <td>Days between Posts</td>
+              <td>Days between Posts*</td>
+              <td>Confirm Changes</td>
             </tr>
-              <tr tal:repeat="(title, archive_url, created, time_between, url, preview) feeds">
-                  <td tal:content="title">text replaced by item</td>
+            <tr id="${id}" tal:repeat="(title, archive_url, created, time_between, url, preview, id) feeds">
+                <td contenteditable='true' id="title" tal:content="title">text replaced by item</td>
                   <td><a href="${url}"><div class='ellipsis'>${url}</div></a></td>
                   <td><a href="${preview}"><div class='ellipsis'>${preview}</div></a></td>
                   <td><a href="${archive_url}"><div class='ellipsis'>${archive_url}</div></a></td>
                   <td tal:content="created">text replaced by item</td>
-                  <td tal:content="time_between">text replaced by item</td>
+                  <td contenteditable='true' id="days_between" tal:content="time_between">text replaced by item</td>
+                  <td><button onclick="saveChanges('${id}')">Confirm Changes</button></td>
               </tr>
           </table>
-            <!-- <script src="${request.static_url('rsstory:static/feed_management.js')}"></script> -->
+          <div id="response">
+          </div>
+            <script src="${request.static_url('rsstory:static/feed_management.js')}"></script>
       </div>
     </div>
   </body>

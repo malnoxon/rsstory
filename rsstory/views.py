@@ -126,6 +126,7 @@ def my_feeds(request):
     time_between_posts = []
     urls = []
     preview_feeds = []
+    ids = []
     for f in feeds:
         titles.append(f.name)
         archive_urls.append(f.archive_url)
@@ -133,13 +134,20 @@ def my_feeds(request):
         time_between_posts.append(f.time_between_posts)
         urls.append("/static/feeds/" + f.id + ".xml")
         preview_feeds.append("/static/previews/preview" + f.id + ".txt")
+        ids.append(f.id)
     user = DBSession.query(User).filter_by(id=request.authenticated_userid).first()
     user_email = None
     if user:
         user_email = user.email
     return dict(logged_in=(request.authenticated_userid != None),
                 user_email=user_email,
-                feeds=zip(titles, archive_urls, time_created, time_between_posts, urls, preview_feeds))
+                feeds=zip(titles, archive_urls, time_created, time_between_posts, urls, preview_feeds, ids))
+
+@view_config(route_name='update_feed', renderer='json')
+def update_feed(request):
+    rsstory.user.update_user_feeds(request.json_body['feed_id'], request.json_body['title'], request.json_body['time_between'])
+    return {"title": request.json_body['title']}
+
 
 
 @view_config(route_name='feed', renderer='json')

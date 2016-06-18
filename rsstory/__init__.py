@@ -42,6 +42,7 @@ def main(global_config, **settings):
     config.add_route('logout', '/logout')
     config.add_route('howdy', '/howdy')
     config.add_route('my_feeds', '/my-feeds')
+    config.add_route('update_feed', '/my-feeds/update_feed')
     # config.add_route('view_wiki', '/')
     # config.add_route('view_page', '/{pagename}')
     # config.add_route('add_page', '/add_page/{pagename}')
