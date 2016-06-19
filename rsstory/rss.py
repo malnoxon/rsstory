@@ -1,6 +1,6 @@
 import datetime, PyRSS2Gen, sys, pickle
 from rsstory.scraping import *
-import rsstory.periodic as periodic
+# import rsstory.periodic as periodic
 import pyramid.threadlocal
 import urllib.parse
 import os
@@ -9,6 +9,7 @@ from random import SystemRandom
 import logging
 import time
 import transaction
+from crontab import CronTab
 
 from .models import (
         DBSession,
@@ -160,9 +161,10 @@ def archive_to_rss(archive_url, time_between_posts, title, recaptcha_answer, use
                 log.info("Transaction committed")
             rss_feed_filename = write_rss(feed, url_data[:1])
             # log.info("rss_feed_filename is: {}".format(rss_feed_filename))
-            # periodic.setup_cron(fpath, time_between)
+            setup_cron(feed.id, time_between)
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
             log.info("preview feed written")
+            update_feed(feed.id)
             return (rss_feed_filename, preview_feed_filename, False)
         else:
             log.error("Invalid captcha entered")
@@ -200,6 +202,24 @@ def report_archive_fail(url, comments, ip, recaptcha_answer):
     else:
         log.error("Captcha invalid")
         return False
+
+def setup_cron(feed_id, time_between):
+    tab = CronTab(user=True)
+    cmd = os.path.join(os.getcwd(), 'venv', 'bin', 'python') + ' ' + os.path.join(os.getcwd(), 'rsstory', 'rss.py') + ' ' + feed_id
+    cron_job = tab.new(cmd)
+    cron_job.every(time_between.days).dom()
+    cron_job.comment = 'Job for {} at interval (days) {}'.format(feed_id, time_between.days)
+    tab.write()
+
+def update_feed(feed_id):
+    feed = DBSession.query(Feed).filter_by(id=feed_id).first()
+    pages = DBSession.query(Page).filter_by(archive_url=feed.archive_url)
+    rss_items = []
+
+    for p in pages:
+        rss_items.append((p.page_url, p.name))
+
+    write_rss(feed, rss_items)
 
 if __name__ == "__main__":
     archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
