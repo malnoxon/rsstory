@@ -24,6 +24,7 @@ $(document).ready(function() {
         title: $('#title').val(),
         url: $('#archive').val(),
         time: $('#time').val(),
+        time_units: $('#time_units').val(),
         captcha: $('#captcha').val()
       }),
       contentType: 'application/json; charset=utf-8',

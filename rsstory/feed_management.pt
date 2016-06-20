@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <ul>
-  <li><a class="active" href="/">Home</a></li>
+  <li><a href="/">Home</a></li>
   <li><a href="archive_fails">Report Error</a></li>
   <li><a href="https://github.com/Daphron/rsstory">Github</a></li>
   <li><a href="howdy">Howdy</a></li>
@@ -46,7 +46,7 @@ th {
               <td>Feed Preview</td>
               <td>Archive URL</td>
               <td>Time Created</td>
-              <td>Days between Posts*</td>
+              <td>Minutes Between Posts*</td>
               <td>Confirm Changes</td>
             </tr>
             <tr id="${id}" tal:repeat="(title, archive_url, created, time_between, url, preview, id) feeds">
@@ -55,7 +55,7 @@ th {
                   <td><a href="${preview}"><div class='ellipsis'>${preview}</div></a></td>
                   <td><a href="${archive_url}"><div class='ellipsis'>${archive_url}</div></a></td>
                   <td tal:content="created">text replaced by item</td>
-                  <td contenteditable='true' id="days_between" tal:content="time_between">text replaced by item</td>
+                  <td contenteditable='true' tal:content="time_between">text replaced by item</td>
                   <td><button onclick="saveChanges('${id}')">Confirm Changes</button></td>
               </tr>
           </table>

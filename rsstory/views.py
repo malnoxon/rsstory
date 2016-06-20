@@ -131,7 +131,7 @@ def my_feeds(request):
         titles.append(f.name)
         archive_urls.append(f.archive_url)
         time_created.append(datetime.datetime.fromtimestamp(f.time_created).strftime("%Y-%m-%d %H:%M:%S"))
-        time_between_posts.append(f.time_between_posts)
+        time_between_posts.append(f.time_between_posts // 60) # display in minutes
         urls.append("/static/feeds/" + f.id + ".xml")
         preview_feeds.append("/static/previews/preview" + f.id + ".txt")
         ids.append(f.id)
@@ -148,13 +148,11 @@ def update_feed(request):
     rsstory.user.update_user_feeds(request.json_body['feed_id'], request.json_body['title'], request.json_body['time_between'])
     return {"title": request.json_body['title']}
 
-
-
 @view_config(route_name='feed', renderer='json')
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['title'], request.json_body['captcha'], request.authenticated_userid, request.remote_addr)
+    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['time_units'], request.json_body['title'], request.json_body['captcha'], request.authenticated_userid, request.remote_addr)
     if invalid_input:
         return {"rss": "Error", "error_msg": "Error: A bad input value was entered. Be sure that the archive url is correct and that the time between posts is entered as a whole number of days (not as a decimal). If the values are actually correct, please leave a bug report at https://github.com/Daphron/rsstory"}
     if xml_feed == False and preview_page == False:

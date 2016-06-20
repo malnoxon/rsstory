@@ -56,13 +56,21 @@
             </tr>
             <tr>
               <td>
-                <b>Time Between Posts (days):</b>
+                <b>Time Between Posts:</b>
               </td>
               <td>
                 <form>
-                  <input type="text" name="time" id="time" value="1"></input>
+                  <input type="number" name="time" id="time" min="1" value="1"></input>
                   <input type="hidden" name="captcha" id="captcha">
                 </form>
+              </td>
+              <td>
+                <select id="time_units">
+                  <option selected="selected" value="minutes">minute(s)</option>
+                  <option value="hours">hour(s)</option>
+                  <option value="days">day(s)</option>
+                  <option value="weeks">week(s)</option>
+                </select>
               </td>
             </tr>
           </table>
