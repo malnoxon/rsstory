@@ -162,7 +162,12 @@ def feed(request):
 @view_config(route_name='archive_fails', renderer='archive_fails.pt')
 def archive_fails(request):
     # rss.report_archive_fail(request.json_body['url'], request.json_body['comments'])
-    return dict(logged_in=(request.authenticated_userid != None))
+    user = DBSession.query(User).filter_by(id=request.authenticated_userid).first()
+    user_email = None
+    if user:
+        user_email = user.email
+    return dict(logged_in=(request.authenticated_userid != None),
+            user_email=user_email)
     # return {"success": True}
 
 
