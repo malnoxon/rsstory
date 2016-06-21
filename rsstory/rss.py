@@ -52,7 +52,6 @@ def gen_pages(items, data_list, time_between, archive_url):
 ''' Takes the given rss_data urls and page titles and writes to the page 
 for the given feed object. rss_data is assumed to be ORDERED'''
 def write_rss(feed, rss_data):
-    # import pdb; pdb.set_trace();
     if feed.name == None or feed.name == "":
         feed.name = "RSStory: {}".format(feed.archive_url)
     description = "RSStory feed for {}".format(feed.archive_url)
@@ -161,12 +160,12 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             # fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
             # log.info("Starting pickle dump")
             # pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
-            with transaction.manager:
-                feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id)
-                DBSession.add(feed)
-                # DBSession.commit()
-                transaction.commit()
-                log.info("Transaction committed")
+            # with transaction.manager:
+            most_recent_page = DBSession.query(Page).filter_by(archive_url=archive_url).first()
+            feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id, most_recent_page=most_recent_page.id)
+            DBSession.add(feed)
+            # transaction.commit()
+            log.info("Transaction committed")
             rss_feed_filename = write_rss(feed, url_data[:1])
             # log.info("rss_feed_filename is: {}".format(rss_feed_filename))
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
@@ -189,7 +188,7 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
     except Exception as e:
         log.error("Archive to RSS had an error:: {}".format(str(e)))
         print(sys.exc_info()[0], os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1], sys.exc_info()[2].tb_lineno)
-        import pdb; pdb.post_mortem(sys.exc_info()[2]);
+        import pdb; pdb.post_mortem(sys.exc_info()[2]); # TODO remove in prod
         return (False, False, False)
 
 def report_archive_fail(url, comments, ip, recaptcha_answer):
@@ -219,14 +218,34 @@ def report_archive_fail(url, comments, ip, recaptcha_answer):
 
 def update_feed(feed_id):
     log.debug("Updating feed {}".format(feed_id))
-    feed = DBSession.query(Feed).filter_by(id=feed_id).first()
-    pages = DBSession.query(Page).filter_by(archive_url=feed.archive_url)
-    rss_items = []
+    with transaction.manager:
+        feed = DBSession.query(Feed).filter_by(id=feed_id).first()
+        pages = DBSession.query(Page).filter_by(archive_url=feed.archive_url)
+        rss_items = []
+        was_most_recent_page = False
 
-    for p in pages:
-        rss_items.append((p.page_url, p.name))
+        for p in pages:
+            rss_items.append((p.page_url, p.name))
+            if was_most_recent_page:
+                feed.most_recent_page = p.id
+                was_most_recent_page = False
+                break
+            if p.id == feed.most_recent_page:
+                was_most_recent_page = True
 
-    write_rss(feed, rss_items)
+        if was_most_recent_page:
+            # End of archive message
+            last_item = PyRSS2Gen.RSSItem(
+                title = "Archive End",
+                description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
+                link = "https://github.com/Daphron/rsstory",
+                guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
+                pubDate = curr_time
+                )
+            rss_items.append(last_item)
+
+        write_rss(feed, rss_items)
+        transaction.commit()
 
 if __name__ == "__main__":
     archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))

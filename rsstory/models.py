@@ -27,6 +27,7 @@ class Feed(Base):
     time_between_posts = Column(Integer, nullable=False)
     time_created = Column(Integer, nullable=False)
     user = Column(ForeignKey('users.id'))
+    most_recent_page = Column(ForeignKey('pages.id'))
 
 
 """ A Page represents one post on the website. There will be many of these
