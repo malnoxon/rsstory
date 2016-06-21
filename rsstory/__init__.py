@@ -4,6 +4,7 @@ from pyramid.settings import asbool
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from apscheduler.schedulers.background import BackgroundScheduler
+import rsstory.rss as rss
 
 from .models import (
     DBSession,
@@ -30,6 +31,8 @@ def main(global_config, **settings):
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
 
+    rss.recreate_jobs()
+
     # config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('feed', '/feed')
@@ -49,5 +52,3 @@ def main(global_config, **settings):
     # config.add_static_view(name='private_static', path='rsstory:static')
     config.scan('.views')
     return config.make_wsgi_app()
-
-

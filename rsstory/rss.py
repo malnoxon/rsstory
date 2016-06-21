@@ -1,7 +1,6 @@
-import datetime, PyRSS2Gen, sys, pickle
+import datetime, PyRSS2Gen, sys
 from rsstory.scraping import *
 from rsstory.scheduler import scheduler
-# import rsstory.periodic as periodic
 import pyramid.threadlocal
 import urllib.parse
 import os
@@ -10,7 +9,6 @@ from random import SystemRandom
 import logging
 import time
 import transaction
-from crontab import CronTab
 
 from .models import (
         DBSession,
@@ -56,7 +54,6 @@ def write_rss(feed, rss_data):
         feed.name = "RSStory: {}".format(feed.archive_url)
     description = "RSStory feed for {}".format(feed.archive_url)
 
-    # curr_time = datetime.datetime.now()
     curr_time = datetime.datetime.fromtimestamp(feed.time_created)
     time_between = datetime.timedelta(seconds=feed.time_between_posts)
     rss_items = []
@@ -74,17 +71,6 @@ def write_rss(feed, rss_data):
             ))
         curr_time += time_between
         index += 1
-
-    #TODO: add end of archive message when we've checked and seen the archive is done instead of now
-    # End of archive message
-    # last_item = PyRSS2Gen.RSSItem(
-    #     title = "Archive End",
-    #     description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
-    #     link = "https://github.com/Daphron/rsstory",
-    #     guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
-    #     pubDate = curr_time
-    #     )
-    # rss_items.append(last_item)
         
     rss = PyRSS2Gen.RSS2(
             title = feed.name,
@@ -156,20 +142,14 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             #have to add delay maybe.
             gen_pages(rss_items, url_data[:], time_between, archive_url)
             archive_id = SystemRandom().getrandbits(512)
-            # fname = "rssitems{}.p".format(archive_id)
-            # fpath = os.path.join(os.getcwd(), 'rsstory', 'static', 'rssitems', fname)
-            # log.info("Starting pickle dump")
-            # pickle.dump((rss_items, archive_url, title), open(fpath, "wb"))
-            # with transaction.manager:
             most_recent_page = DBSession.query(Page).filter_by(archive_url=archive_url).first()
             feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id, most_recent_page=most_recent_page.id)
             DBSession.add(feed)
-            # transaction.commit()
             log.info("Transaction committed")
             rss_feed_filename = write_rss(feed, url_data[:1])
-            # log.info("rss_feed_filename is: {}".format(rss_feed_filename))
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
             log.info("preview feed written")
+
             if time_units == 'minutes':
                 scheduler.add_job(update_feed, 'interval', args=[feed.id], minutes=1, id=feed.id)
             if time_units == 'hours':
@@ -178,6 +158,7 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
                 scheduler.add_job(update_feed, 'interval', args=[feed.id], days=1, id=feed.id)
             if time_units == 'weeks':
                 scheduler.add_job(update_feed, 'interval', args=[feed.id], weeks=1, id=feed.id)
+
             return (rss_feed_filename, preview_feed_filename, False)
         else:
             log.error("Invalid captcha entered")
@@ -246,6 +227,11 @@ def update_feed(feed_id):
 
         write_rss(feed, rss_items)
         transaction.commit()
+
+def recreate_jobs():
+    feeds = DBSession.query(Feed)
+    for feed in feeds:
+        scheduler.add_job(update_feed, 'interval', args=[feed.id], seconds=feed.time_between_posts)
 
 if __name__ == "__main__":
     archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
