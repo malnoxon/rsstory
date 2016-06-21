@@ -53,9 +53,6 @@
           </button>
         </div>
       </div>
-      <div id="footer">
-        <p> Development of RSStory done at <a href="https://github.com/Daphron/rsstory">https://github.com/Daphron/rsstory</a><p>
-      </div>
     </div>
   </body>
   <script src="${request.static_url('rsstory:static/archive_fails.js')}"></script>
