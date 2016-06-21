@@ -18,8 +18,8 @@ from .models import (
 
 log = logging.getLogger(__name__)
 
-''' Gets the row of the table, creating it first if it doesn't exit'''
 def get_or_create_row(table, **kwargs):
+    ''' Gets the row of the table, creating it first if it doesn't exit'''
     row = DBSession.query(table).filter_by(**kwargs).first()
     if row:
         return (row, False)
@@ -47,9 +47,9 @@ def gen_pages(items, data_list, time_between, archive_url):
         curr_time += time_between
         index += 1
 
-''' Takes the given rss_data urls and page titles and writes to the page 
-for the given feed object. rss_data is assumed to be ORDERED'''
 def write_rss(feed, rss_data):
+    ''' Takes the given rss_data urls and page titles and writes to the page 
+    for the given feed object. rss_data is assumed to be ORDERED'''
     if feed.name == None or feed.name == "":
         feed.name = "RSStory: {}".format(feed.archive_url)
     description = "RSStory feed for {}".format(feed.archive_url)
@@ -150,14 +150,16 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             preview_feed_filename = write_preview_feed(rss_items, archive_url, title, archive_id)
             log.info("preview feed written")
 
+            job = None
             if time_units == 'minutes':
-                scheduler.add_job(update_feed, 'interval', args=[feed.id], minutes=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], minutes=1, id=feed.id)
             if time_units == 'hours':
-                scheduler.add_job(update_feed, 'interval', args=[feed.id], hours=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], hours=1, id=feed.id)
             if time_units == 'days':
-                scheduler.add_job(update_feed, 'interval', args=[feed.id], days=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], days=1, id=feed.id)
             if time_units == 'weeks':
-                scheduler.add_job(update_feed, 'interval', args=[feed.id], weeks=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], weeks=1, id=str(feed.id))
+            log.debug("JOB ID: {} added".format(job.id))
 
             return (rss_feed_filename, preview_feed_filename, False)
         else:
@@ -231,7 +233,7 @@ def update_feed(feed_id):
 def recreate_jobs():
     feeds = DBSession.query(Feed)
     for feed in feeds:
-        scheduler.add_job(update_feed, 'interval', args=[feed.id], seconds=feed.time_between_posts)
+        scheduler.add_job(update_feed, 'interval', args=[feed.id], seconds=feed.time_between_posts, id=feed.id)
 
 if __name__ == "__main__":
     archive_to_rss(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
