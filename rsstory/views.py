@@ -36,6 +36,7 @@ from .models import (
     DBSession,
     Feed,
     User,
+    Page,
     )
 
 from config import CONFIG
@@ -127,6 +128,7 @@ def my_feeds(request):
     urls = []
     preview_feeds = []
     ids = []
+    current_articles = []
     for f in feeds:
         titles.append(f.name)
         archive_urls.append(f.archive_url)
@@ -142,6 +144,53 @@ def my_feeds(request):
     return dict(logged_in=(request.authenticated_userid != None),
                 user_email=user_email,
                 feeds=zip(titles, archive_urls, time_created, time_between_posts, urls, preview_feeds, ids))
+
+@view_config(route_name='change_current_article', renderer='change_current_article.pt')
+def change_current_article(request):
+    user = DBSession.query(User).filter_by(id=request.authenticated_userid).first()
+    user_email = None
+    if user:
+        user_email = user.email
+
+    id = request.GET['id']
+    feed = DBSession.query(Feed).filter_by(id=id).first()
+    pages = DBSession.query(Page).filter_by(archive_url=feed.archive_url)
+    page_titles = []
+    page_urls = []
+    page_ids = []
+    for p in pages:
+        page_ids.append(p.id)
+        page_titles.append(p.name)
+        page_urls.append(p.page_url)
+
+    if not feed or feed.user != request.authenticated_userid:
+        return dict(logged_in=(request.authenticated_userid != None),
+                user_email=user_email,
+                id=None,
+                feed_url=None,
+                feed_preview=None,
+                archive_url=None,
+                time_created=None,
+                time_between_posts=None,
+                pages=None,
+                )
+
+    return dict(logged_in=(request.authenticated_userid != None),
+            user_email=user_email,
+            feed_id=feed.id,
+            feed_url="/static/feeds/" + feed.id + ".xml",
+            feed_preview="/static/previews/preview" + feed.id + ".txt",
+            archive_url=feed.archive_url,
+            time_created=feed.time_created,
+            time_between_posts=feed.time_between_posts,
+            most_recent_page=feed.most_recent_page,
+            pages=zip(page_ids, page_titles, page_urls)
+            )
+
+@view_config(route_name='update_place_in_feed', renderer='json')
+def update_place_in_feed(request):
+    rsstory.user.update_place_in_feed(request.json_body['feed_id'], request.json_body['page_id'])
+    return {}
 
 @view_config(route_name='update_feed', renderer='json')
 def update_feed(request):

@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="archive-fails">Report Error</a></li>
+    <li><a href="https://github.com/Daphron/rsstory">Github</a></li>
+    <li tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
+    <li tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
+    <li tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
+    <li tal:condition="logged_in" style="float:right"><a href="${request.application_url}/my-feeds">My Feeds</a></li>
+  </ul>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="${request.static_url('rsstory:static/style.css')}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <style>
+table, th, td {
+  width: 100%
+}
+/* th, td { */
+/*   padding: 5px; */
+/* } */
+/* th { */
+/*   text-align: left; */
+/* } */
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        <h1>
+          Change Location in Feed
+        </h1>
+        <h6>
+          Note: Going backwards may NOT WORK. Going forward should work
+      </div>
+      <div id="main_content">
+        <h3>
+          Feed Data:
+        </h3>
+        <div id="feed_data">
+          feed url = <a href="${feed_url}"><div class='long_ellipsis'>${feed_url}</div></a>
+          preview url = <a href="${feed_preview}"><div class='long_ellipsis'>${feed_preview}</div></a>
+          archive url = <a href="${archive_url}"><div class='long_ellipsis'>${archive_url}</div></a>
+          time between posts (seconds) = ${time_between_posts}<br>
+          time created = ${time_created}<br>
+          most recent page id = ${most_recent_page}<br>
+        </div>
+
+        <h3>
+          Pages:
+        </h3>
+          <table id="pages">
+            <tr> 
+              <td>Page Title</td>
+              <td>Page URL</td>
+              <td>Most Recent Page</td>
+            </tr>
+            <tr tal:repeat="(page_id, title, url) pages">
+            <td tal:content="title">Here be content stuff</td>
+            <td><a tal:content="url" href="${url}">Here be content stuff</a></td>
+            <td><input type="radio" name="start_page", value="${page_id}"</td>
+            </tr>
+          </table>
+          <button onclick="saveChanges('${feed_id}')">Confirm Changes</button>
+          <span id="response"></span>
+
+        <script src="${request.static_url('rsstory:static/change_current_article.js')}"></script>
+      </div>
+    </div>
+  </body>
+</html>

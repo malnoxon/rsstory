@@ -18,24 +18,18 @@ from .models import (
 
 log = logging.getLogger(__name__)
 
-def get_or_create_row(table, **kwargs):
-    ''' Gets the row of the table, creating it first if it doesn't exit'''
-    row = DBSession.query(table).filter_by(**kwargs).first()
-    if row:
-        return (row, False)
-    else:
-        row = table(**kwargs)
-        DBSession.add(row)
-        transaction.commit() # TODO: can we do this less frequently?
-        return (row, True)
-
 def gen_pages(items, data_list, time_between, archive_url):
     #TODO: way to deal with changes to parsing engine!!!!!
     curr_time = datetime.datetime.now()
     index = 0
     while data_list:
         data = data_list.pop(0)
-        page, created = get_or_create_row(Page, id=index, name=data[1], page_url=data[0], archive_url=archive_url)
+        # page, created = get_or_create_row(Page, id=index, name=data[1], page_url=data[0], archive_url=archive_url)
+        page = DBSession.query(Page).filter_by(id=index, name=data[1], page_url=data[0], archive_url=archive_url).first()
+        if not page:
+            page = Page(id=index, name=data[1], page_url=data[0], archive_url=archive_url, time_created=int(time.time()))
+            DBSession.add(page)
+            transaction.commit() # TODO: can we do this less frequently?
 
         items.append(PyRSS2Gen.RSSItem(
             title = page.name,
@@ -217,15 +211,18 @@ def update_feed(feed_id):
                 was_most_recent_page = True
 
         if was_most_recent_page:
+            pass
+            # TODO: add end of archive message (maybe one special db entry?)
+            # TODO: remove job
             # End of archive message
-            last_item = PyRSS2Gen.RSSItem(
-                title = "Archive End",
-                description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
-                link = "https://github.com/Daphron/rsstory",
-                guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
-                pubDate = curr_time
-                )
-            rss_items.append(last_item)
+            # last_item = PyRSS2Gen.RSSItem(
+            #     title = "Archive End",
+            #     description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
+            #     link = "https://github.com/Daphron/rsstory",
+            #     guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
+            #     pubDate = datetime.datetime.now()
+            #     )
+            # rss_items.append(last_item)
 
         write_rss(feed, rss_items)
         transaction.commit()

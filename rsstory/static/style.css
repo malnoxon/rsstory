@@ -167,3 +167,9 @@ li a:hover {
     white-space: nowrap;
     width:100px;
 }
+.long_ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width:400px;
+}

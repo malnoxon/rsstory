@@ -39,6 +39,7 @@ class Page(Base):
     name = Column(Text)
     page_url = Column(Text)
     description = Column(Text)
+    time_created = Column(Text, nullable=False)
     
 
 class User(Base):
