@@ -36,7 +36,7 @@ $(document).ready(function() {
         if (status === "success" && (! (data.rss === 'Error'))) {
           $('#main_body').append('<span id="rss_output">URL reported successfully</span>');
         } else {
-          $('#main_body').append('<span id="rss_output">Cross my heart, smack me dead, stick a lobster on my head, you managed to break the error reporting system! Please file a bug at <a href="https://github.com/Daphron/rsstory">https://github.com/Daphron/rsstory</a></span>');
+          $('#main_body').append('<span id="rss_output">Cross my heart, smack me dead, stick a lobster on my head, you managed to break the error reporting system! Please file a bug at <a href="https://github.com/malnoxon/rsstory">https://github.com/malnoxon/rsstory</a></span>');
         }
       },
       dataType: "text"

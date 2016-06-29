@@ -26,3 +26,8 @@ function changeCurrentArticle(id) {
     var url =  window.location.protocol + "//" + window.location.host + window.location.pathname;
     window.location = url + "/change-current-article?id=" + id
 }
+
+function deleteFeed(id) {
+    var url =  window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.location = url + "/delete-feed?id=" + id
+}

@@ -26,3 +26,10 @@ def update_place_in_feed(feed_id, page_id):
     feed = DBSession.query(Feed).filter_by(id=feed_id).first()
     feed.most_recent_page = page_id
     print("feed id: {} page id: {}".format(feed_id, page_id))
+
+def delete_feed(feed_id):
+    feed = DBSession.query(Feed).filter_by(id=feed_id)
+    scheduler.remove_job(feed_id)
+    feed.delete()
+    log.debug("Feed id: {} was deleted".format(feed_id))
+

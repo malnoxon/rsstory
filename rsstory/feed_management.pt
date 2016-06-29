@@ -4,7 +4,7 @@
 <ul>
   <li><a href="/">Home</a></li>
   <li><a href="archive-fails">Report Error</a></li>
-  <li><a href="https://github.com/Daphron/rsstory">Github</a></li>
+  <li><a href="https://github.com/malnoxon/rsstory">Github</a></li>
   <li tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
   <li tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
   <li tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
@@ -49,6 +49,7 @@ th {
               <td>Minutes Between Posts*</td>
               <td>Confirm Changes</td>
               <td>Skip Ahead in Feed</td>
+              <td>Delete Feed</td>
             </tr>
             <tr id="${id}" tal:repeat="(title, archive_url, created, time_between, url, preview, id) feeds">
                 <td contenteditable='true' id="title" tal:content="title">text replaced by item</td>
@@ -59,6 +60,7 @@ th {
                   <td contenteditable='true' tal:content="time_between">text replaced by item</td>
                   <td><button onclick="saveChanges('${id}')">Confirm Changes</button></td>
                   <td><button onclick="changeCurrentArticle('${id}')">Skip Ahead</button></td>
+                  <td><button onclick="deleteFeed('${id}')">Delete Feed</button></td>
               </tr>
           </table>
           <div id="response">

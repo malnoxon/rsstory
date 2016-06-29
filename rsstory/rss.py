@@ -217,9 +217,9 @@ def update_feed(feed_id):
             # End of archive message
             # last_item = PyRSS2Gen.RSSItem(
             #     title = "Archive End",
-            #     description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/Daphron/rsstory",
-            #     link = "https://github.com/Daphron/rsstory",
-            #     guid = PyRSS2Gen.Guid("https://github.com/Daphron/rsstory"),
+            #     description = "This RSStory archive feed has ended. You have now seen all the posts that were contained in the website's archive when you created this archive feed. Thank you for using RSStory. If you wish to report an issue or help develop RSStory you can do so at https://github.com/malnoxon/rsstory",
+            #     link = "https://github.com/malnoxon/rsstory",
+            #     guid = PyRSS2Gen.Guid("https://github.com/malnoxon/rsstory"),
             #     pubDate = datetime.datetime.now()
             #     )
             # rss_items.append(last_item)

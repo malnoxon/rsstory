@@ -3,7 +3,7 @@
 <ul>
   <li><a href="/">Home</a></li>
   <li><a class="active" href="archive-fails">Report Error</a></li>
-  <li><a href="https://github.com/Daphron/rsstory">Github</a></li>
+  <li><a href="https://github.com/malnoxon/rsstory">Github</a></li>
   <li tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
   <li tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
   <li tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
