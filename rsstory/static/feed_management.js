@@ -7,7 +7,7 @@ function saveChanges(id) {
 
     $.ajax({
         type    : 'POST',
-        url     : url + "/update_feed",
+        url     : url + "/update-feed",
         data: window.JSON.stringify({
             feed_id: id,
             title: title,

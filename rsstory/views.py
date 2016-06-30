@@ -189,18 +189,18 @@ def change_current_article(request):
 
 @view_config(route_name='update_place_in_feed', renderer='json')
 def update_place_in_feed(request):
-    rsstory.user.update_place_in_feed(request.json_body['feed_id'], request.json_body['page_id'])
+    rsstory.user.update_place_in_feed(request.json_body['feed_id'], request.json_body['page_id'], request.authenticated_userid)
     return {}
 
 @view_config(route_name='delete_feed')
 def delete_feed(request):
-    rsstory.user.delete_feed(request.GET['id'])
+    rsstory.user.delete_feed(request.GET['id'], request.authenticated_userid)
     url = request.route_url('my_feeds')
     return HTTPFound(location=url)
 
 @view_config(route_name='update_feed', renderer='json')
 def update_feed(request):
-    rsstory.user.update_user_feeds(request.json_body['feed_id'], request.json_body['title'], request.json_body['time_between'])
+    rsstory.user.update_user_feeds(request.json_body['feed_id'], request.json_body['title'], request.json_body['time_between'], request.authenticated_userid)
     return {"title": request.json_body['title']}
 
 @view_config(route_name='feed', renderer='json')
