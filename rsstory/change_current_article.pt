@@ -19,12 +19,12 @@
 table, th, td {
   width: 100%
 }
-/* th, td { */
-/*   padding: 5px; */
-/* } */
-/* th { */
-/*   text-align: left; */
-/* } */
+th, td {
+  padding: 5px;
+}
+th {
+  text-align: left;
+}
     </style>
   </head>
   <body>
@@ -34,7 +34,9 @@ table, th, td {
           Change Location in Feed
         </h1>
         <h6>
-          Note: Going backwards may NOT WORK. Going forward should work
+          Note: Going backwards may NOT WORK. Going forward should work<br>
+          * Current most recent page
+        </h6>
       </div>
       <div id="main_content">
         <h3>
@@ -54,14 +56,17 @@ table, th, td {
         </h3>
           <table id="pages">
             <tr> 
+              <td></td>
               <td>Page Title</td>
               <td>Page URL</td>
               <td>Most Recent Page</td>
             </tr>
             <tr tal:repeat="(page_id, title, url) pages">
+              <td><b tal:condition="most_recent_page == page_id">*</b></td>
             <td tal:content="title">Here be content stuff</td>
             <td><a tal:content="url" href="${url}">Here be content stuff</a></td>
-            <td><input type="radio" name="start_page", value="${page_id}"</td>
+            <td tal:condition="most_recent_page == page_id"><input type="radio" name="start_page", value="${page_id}" checked="checked"></td>
+            <td tal:condition=" not: most_recent_page == page_id"><input type="radio" name="start_page", value="${page_id}"></td>
             </tr>
           </table>
           <button onclick="saveChanges('${feed_id}')">Confirm Changes</button>
