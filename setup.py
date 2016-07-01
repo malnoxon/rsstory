@@ -9,11 +9,10 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'docutils', #TODO remove
     ]
 
 setup(name='rsstory',
-      version='0.0',
+      version='0.2.0',
       description='rsstory',
       classifiers=[
         "Programming Language :: Python",
@@ -21,8 +20,8 @@ setup(name='rsstory',
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         ],
-      author='',
-      author_email='',
+      author='malnoxon',
+      author_email='malnoxon@gmail.com',
       url='',
       keywords='web wsgi bfg pylons pyramid',
       packages=find_packages(),

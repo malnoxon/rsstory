@@ -165,7 +165,10 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
     except Exception as e:
         log.error("Archive to RSS had an error:: {}".format(str(e)))
         print(sys.exc_info()[0], os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1], sys.exc_info()[2].tb_lineno)
-        import pdb; pdb.post_mortem(sys.exc_info()[2]); # TODO remove in prod
+        registry = pyramid.threadlocal.get_current_registry()
+
+        if registry.settings['debug_settings']:
+            import pdb; pdb.post_mortem(sys.exc_info()[2]);
         return (False, False, False)
 
 def report_archive_fail(url, comments, ip, recaptcha_answer):

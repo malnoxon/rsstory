@@ -65,9 +65,11 @@
               </td>
               <td>
                 <select id="time_units">
-                  <option selected="selected" value="minutes">minute(s)</option>
+                  <option tal:condition="debug" selected="selected" value="minutes">minute(s)</option>
+                  <option tal:condition="not: debug" value="minutes">minute(s)</option>
                   <option value="hours">hour(s)</option>
-                  <option value="days">day(s)</option>
+                  <option tal:condition="not: debug" selected="selected" value="days">day(s)</option>
+                  <option tal:condition="debug" value="days">day(s)</option>
                   <option value="weeks">week(s)</option>
                 </select>
               </td>

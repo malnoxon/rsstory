@@ -1,5 +1,6 @@
 import rsstory.rss as rss
 import rsstory.user
+import pyramid.threadlocal
 from pyramid.response import Response
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
@@ -51,8 +52,10 @@ def home(request):
     user_email = None
     if user:
         user_email = user.email
+    registry = pyramid.threadlocal.get_current_registry()
     return dict(logged_in=(request.authenticated_userid != None),
-                user_email=user_email)
+                user_email=user_email,
+                debug=registry.settings['debug_settings'])
 
 @view_config(route_name='login_page', renderer='index.pt')
 @forbidden_view_config(renderer='index.pt')

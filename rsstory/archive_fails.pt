@@ -24,6 +24,11 @@
           <h2>
             <br/><br/>Report failing URL
           </h2>
+          <h6>
+            This page is only for reporting specific URLs that RSStory doesn't
+            function propperly on. For general feature requests please leave
+            an issue at <a href="https://github.com/malnoxon/rsstory">https://github.com/malnoxon/rsstory</a>
+          </h6>
           <table>
             <tr>
               <td>

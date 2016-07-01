@@ -15,7 +15,6 @@ except:
 
 CONFIG = {
         'google': {
-            # TODO: 
             # also, https://console.developers.google.com/apis/credentials/oauthclient/513100890007-jd02kbncueeons32v6rbc739locv0tnl.apps.googleusercontent.com?project=rsstory-1329 
             # cause we will need to add the right redirect uris
             # look at why when login it gives email=None
