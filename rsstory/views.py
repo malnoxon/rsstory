@@ -40,7 +40,7 @@ from .models import (
     Page,
     )
 
-from config import CONFIG
+from rsstory.config import CONFIG
 
 log = logging.getLogger(__name__)
 
