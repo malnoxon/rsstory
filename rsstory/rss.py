@@ -175,15 +175,17 @@ def report_archive_fail(url, comments, ip, recaptcha_answer):
     log.info("Beginning report_archive_fail")
     key = ""
     try:
-        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'recaptcha_key_secret.key'), 'r') as f:
-            key = f.readline()
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'secret', 'secrets.keys'), 'r') as f:
+            key = f.readline().split(",")[1]
     except:
         log.error("The file containing the secret key was not located")
         return False
         
     captcha_response = submit(remote_ip=ip, secret_key=key, response=recaptcha_answer)
     log.debug("recaptcha_answer is: {}".format(recaptcha_answer))
-    if captcha_response.is_valid:
+    registry = pyramid.threadlocal.get_current_registry()
+
+    if captcha_response.is_valid or registry.settings['debug_settings']:
         log.info("Captcha response verified as valid")
         fname = "failed_urls.txt"
         fpath = os.path.join(os.getcwd(), 'rsstory', fname)
