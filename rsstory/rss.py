@@ -24,12 +24,10 @@ def gen_pages(items, data_list, time_between, archive_url):
     index = 0
     while data_list:
         data = data_list.pop(0)
-        # page, created = get_or_create_row(Page, id=index, name=data[1], page_url=data[0], archive_url=archive_url)
         page = DBSession.query(Page).filter_by(id=index, name=data[1], page_url=data[0], archive_url=archive_url).first()
         if not page:
             page = Page(id=index, name=data[1], page_url=data[0], archive_url=archive_url, time_created=int(time.time()))
             DBSession.add(page)
-            transaction.commit() # TODO: can we do this less frequently?
 
         items.append(PyRSS2Gen.RSSItem(
             title = page.name,
@@ -40,6 +38,7 @@ def gen_pages(items, data_list, time_between, archive_url):
             ))
         curr_time += time_between
         index += 1
+    transaction.commit()
 
 def write_rss(feed, rss_data):
     ''' Takes the given rss_data urls and page titles and writes to the page 

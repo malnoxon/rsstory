@@ -9,7 +9,7 @@ $(document).ready(function() {
     if ($('#rss_output').length) {
       $('#rss_output').remove();
     }
-    $('#main_body').append('<a id="rss_status">Loading...</a>');
+    $('#main_body').append('<a id="rss_status">Loading... (this may take a while)</a>');
 
     // set captcha value
     var elem = document.getElementById("captcha");

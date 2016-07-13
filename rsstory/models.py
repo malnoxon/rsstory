@@ -34,10 +34,10 @@ class Feed(Base):
 for each feed"""
 class Page(Base):
     __tablename__ = 'pages'
-    archive_url = Column(Text)
+    archive_url = Column(Text, primary_key=True)
     id = Column(Integer, primary_key=True)
     name = Column(Text)
-    page_url = Column(Text)
+    page_url = Column(Text, nullable=False)
     description = Column(Text)
     time_created = Column(Text, nullable=False)
     
