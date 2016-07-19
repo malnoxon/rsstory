@@ -17,7 +17,6 @@ from .models import (
         )
 
 log = logging.getLogger(__name__)
-
 def gen_pages(items, data_list, time_between, archive_url):
     #TODO: way to deal with changes to parsing engine!!!!!
     curr_time = datetime.datetime.now()

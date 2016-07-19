@@ -144,7 +144,8 @@ def filterArchiveLinks(all_links, page_url):
         if col is None:
             col = features[:,i]
         else:
-            if np.array_equal(col, features[:,i]):
+            # TODO: should be if NOT equal?
+            if not np.array_equal(col, features[:,i]):
                 diff_cols = True
                 break
 
@@ -189,12 +190,11 @@ def date_of_url_arrow(link):
     return None
 
 def sort_by_date(urls):
-    #If date_of_url fails on some dates, use arrow
+    # If date_of_url fails on some dates, use arrow, if arrow fails, then don't
+    # change the order (sort() is a stable sort)
     if any(filter(lambda x: date_of_url(x) is None, urls)):
-        urls = list(filter(lambda x: date_of_url_arrow(x) is not None, urls))
-        urls.sort(key=lambda x: date_of_url_arrow(x))
+        urls.sort(key=lambda x: (date_of_url_arrow(x) is None, date_of_url_arrow(x)))
     else:
-        urls = list(filter(lambda x: date_of_url(x) is not None, urls))
         urls.sort(key=lambda x: date_of_url(x))
     return urls
 
