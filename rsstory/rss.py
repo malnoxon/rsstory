@@ -109,14 +109,17 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
                 log.info("Captcha response verified as valid")
             elif registry.settings['debug_settings']:
                 log.info("Captcha response not needed due to debug_settings=True")
-            if time_units == 'minutes':
+            if time_units == 'minutes' and registry.settings['debug_settings']:
                 time_between = datetime.timedelta(minutes=int(time_between_posts))
-            if time_units == 'hours':
+            elif time_units == 'hours':
                 time_between = datetime.timedelta(hours=int(time_between_posts))
-            if time_units == 'days':
+            elif time_units == 'days':
                 time_between = datetime.timedelta(days=int(time_between_posts))
-            if time_units == 'weeks':
+            elif time_units == 'weeks':
                 time_between = datetime.timedelta(weeks=int(time_between_posts))
+            else:
+                return (False, False, False)
+
             rss_items = []
             url_data = []
             links = scrape(archive_url)
@@ -135,7 +138,8 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             gen_pages(rss_items, url_data[:], time_between, archive_url)
             archive_id = SystemRandom().getrandbits(512)
             most_recent_page = DBSession.query(Page).filter_by(archive_url=archive_url).first()
-            feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id, most_recent_page=most_recent_page.id)
+            if most_recent_page:
+                feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id, most_recent_page=most_recent_page.id)
             DBSession.add(feed)
             log.info("Transaction committed")
             rss_feed_filename = write_rss(feed, url_data[:1])

@@ -46,7 +46,7 @@ th {
               <td>Feed Preview</td>
               <td>Archive URL</td>
               <td>Time Created</td>
-              <td>Minutes Between Posts*</td>
+              <td>Hours Between Posts*</td>
               <td>Confirm Changes</td>
               <td>Skip Ahead in Feed</td>
               <td>Delete Feed</td>

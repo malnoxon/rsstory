@@ -136,7 +136,7 @@ def my_feeds(request):
         titles.append(f.name)
         archive_urls.append(f.archive_url)
         time_created.append(datetime.datetime.fromtimestamp(f.time_created).strftime("%Y-%m-%d %H:%M:%S"))
-        time_between_posts.append(f.time_between_posts // 60) # display in minutes
+        time_between_posts.append(f.time_between_posts // (60 * 24)) # display in hours
         urls.append("/static/feeds/" + f.id + ".xml")
         preview_feeds.append("/static/previews/preview" + f.id + ".txt")
         ids.append(f.id)
