@@ -7,8 +7,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import rsstory.rss as rss
 
 from .models import (
-    DBSession,
-    Base,
+    DBSession, Base,
     )
 
 def main(global_config, **settings):
@@ -47,6 +46,7 @@ def main(global_config, **settings):
     config.add_route('change_current_article', '/my-feeds/change-current-article')
     config.add_route('update_place_in_feed', '/my-feeds/change-current-article/update-place-in-feed')
     config.add_route('delete_feed', '/my-feeds/delete-feed')
+    config.add_route('about', '/about')
     # config.add_route('view_wiki', '/')
     # config.add_route('view_page', '/{pagename}')
     # config.add_route('add_page', '/add_page/{pagename}')

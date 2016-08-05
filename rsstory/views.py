@@ -64,6 +64,15 @@ def login_page(request):
         Login with <a href="login/google">Google</a>.<br />
     ''')
 
+@view_config(route_name='about', renderer='about.pt')
+def about(request):
+    user = DBSession.query(User).filter_by(id=request.authenticated_userid).first()
+    user_email = None
+    if user:
+        user_email = user.email
+    return dict(logged_in=(request.authenticated_userid != None),
+                user_email=user_email)
+
 @view_config(route_name='logout', renderer='index.pt')
 def logout(request):
     headers = forget(request)

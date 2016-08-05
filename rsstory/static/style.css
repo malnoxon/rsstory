@@ -50,20 +50,6 @@ button {
     font-size: 12px;
     font-size: 20px;
 }
-.menu {
-    width: 139px;
-    float: right;
-    padding: 0 20px 0 20px;
-    border-left: #8C8484 1px solid;
-    font-size: 12px;
-}
-.menu ul {
-    margin: 0;
-    padding: 10px 0 10px 15px;
-}
-.menu il {
-    list-style-type: disc;
-}
 #header h1 {
     margin-bottom: 0px;
     font-size: 50px;
@@ -93,19 +79,6 @@ button {
     height:1px;
     overflow:hidden;
 }
-.menu_title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #A40008;
-}
-.menu ul {
-    margin: 0;
-    padding: 10px 0 20px 15px;
-}
-.menu li {
-    padding-top: 2px;
-    list-style-type: circle;
-}
 a {
     color: #A40008;
     font-weight: bold;
@@ -132,7 +105,7 @@ a.menu_link:hover {
     font-weight: bold;
     font-style: italic;
 }
-ul {
+#header_bar {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -140,11 +113,11 @@ ul {
     background-color: #333;
 }
 
-li {
+li.menu {
     float: left;
 }
 
-li a {
+li.menu a {
     display: block;
     color: white;
     text-align: center;
@@ -152,7 +125,7 @@ li a {
     text-decoration: none;
 }
 
-li a:hover {
+li.menu a:hover {
     background-color: #111;
 }
 

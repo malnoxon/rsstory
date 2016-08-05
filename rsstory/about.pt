@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<ul id="header_bar">
+  <li class="menu"><a href="/">Home</a></li>
+  <li class="menu"><a class="active" href="about">About</a></li>
+  <li class="menu"><a href="archive-fails">Report Error</a></li>
+  <li class="menu"><a href="https://github.com/malnoxon/rsstory">Github</a></li>
+  <li class="menu" tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
+  <li class="menu" tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
+  <li class="menu" tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
+  <li class="menu" tal:condition="logged_in" style="float:right"><a href="my-feeds">My Feeds</a></li>
+</ul>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="${request.static_url('rsstory:static/style.css')}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+  </head>
+
+<body>
+  <h1>
+    RSStory
+  </h1>
+  <p>
+  RSStory is a tool to turn the archives of blogs and webcomics into new RSS feeds.
+  </p>
+
+  <h2>When would I use <b>RSStory</b>?</h2>
+  <li>If you've just discovered a new webcomic and want to read through the archives at a leisuly pace, RSStory can do that. </li>
+  <li>If your favorite blogger just stopped blogging, you can use RSStory to have an article from their past work delivered to you daily.</li>
+  <li>Basically, you would use RSStory any time you want a regular stream of old content.</li>
+
+<h2>Usage</h2>
+To use, simply fill in the 3 fields and add the feed to your RSS reader of choise. The feed title can be whatever you want, the time between posts is how often you want your new feed to update, and the archive url is a link to the website's archive of posts. If the website has no dedicated archive page try finding a page with some sort of archive menu on a sidebar. If you can't find that you can try the website's homepage as a last resort.  <b>RSStory</b> is still in an alpha state and as such does not work on many sites. If you want a site RSStory is guarenteed to work on, try the <a href="https://xkcd.com/archive/">xkcd archives</a>
+
+<h2>Problems</h2>
+  <li>If you have a specific website you would like to use RSStory on but currently fails, please report it on the Report Error page or comment on this <a href="https://github.com/malnoxon/rsstory/issues/8">issue</a></li>
+  <li>If you encounter a different problem with RSStory, please create a github <a href="https://github.com/malnoxon/rsstory/issues">issue</a> and I'll try to fix it</li>
+</body>
