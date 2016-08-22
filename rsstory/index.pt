@@ -1,16 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<ul id="header_bar">
-  <li class="menu"><a class="active" href="/">Home</a></li>
-  <li class="menu"><a href="/about">About</a></li>
-  <li class="menu"><a href="/archive-fails">Report Error</a></li>
-  <li class="menu"><a href="https://github.com/malnoxon/rsstory">Github</a></li>
-  <li class="menu" tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
-  <li class="menu" tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
-  <li class="menu" tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
-  <li class="menu" tal:condition="logged_in" style="float:right"><a href="my-feeds">My Feeds</a></li>
-</ul>
+  <ul id="header_bar">
+    <li class="menu"><a class="active" href="/">Home</a></li>
+    <li class="menu"><a href="/about">About</a></li>
+    <li class="menu"><a href="/archive-fails">Report Error</a></li>
+    <li class="menu"><a href="https://github.com/malnoxon/rsstory">Github</a></li>
+    <li class="menu" tal:condition="not: logged_in" style="float:right"><a href="login">Login</a></li>
+    <li class="menu" tal:condition="logged_in" style="float:right"><a href="${request.application_url}/logout">Logout</a></li>
+    <li class="menu" tal:condition="user_email" style="float:right"><a href="${request.application_url}/my-feeds">${user_email}</a></li>
+    <li class="menu" tal:condition="logged_in" style="float:right"><a href="my-feeds">My Feeds</a></li>
+  </ul>
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -75,8 +75,8 @@
               </td>
             </tr>
           </table>
-            <div class="g-recaptcha" data-sitekey="6LcnlgsTAAAAAGmVA_COh_S6FDDtnEUJY9aL8Ulf"></div>
-            <div tal:condition="not: logged_in">WARNING: If you create a feed while not logged in you will NOT be able to manage it later!</div>
+          <div class="g-recaptcha" data-sitekey="6LcnlgsTAAAAAGmVA_COh_S6FDDtnEUJY9aL8Ulf"></div>
+          <div tal:condition="not: logged_in">WARNING: If you create a feed while not logged in you will NOT be able to manage it later!</div>
           <button type="button" id="submit">
             Submit
           </button>
