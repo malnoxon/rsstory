@@ -23,7 +23,7 @@ def gen_pages(items, data_list, time_between, archive_url):
     index = 0
     while data_list:
         data = data_list.pop(0)
-        page = DBSession.query(Page).filter_by(id=index, name=data[1], page_url=data[0], archive_url=archive_url).first()
+        page = DBSession.query(Page).filter_by(id=index, archive_url=archive_url).first()
         if not page:
             page = Page(id=index, name=data[1], page_url=data[0], archive_url=archive_url, time_created=int(time.time()))
             DBSession.add(page)

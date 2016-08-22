@@ -37,7 +37,7 @@ class Page(Base):
     archive_url = Column(Text, primary_key=True)
     id = Column(Integer, primary_key=True)
     name = Column(Text)
-    page_url = Column(Text, nullable=False)
+    page_url = Column(Text, nullable=False) # TODO: make unique?
     description = Column(Text)
     time_created = Column(Text, nullable=False)
     
