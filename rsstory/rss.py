@@ -148,13 +148,13 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
 
             job = None
             if time_units == 'minutes':
-                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], minutes=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], minutes=int(time_between_posts), id=feed.id)
             if time_units == 'hours':
-                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], hours=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], hours=int(time_between_posts), id=feed.id)
             if time_units == 'days':
-                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], days=1, id=feed.id)
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], days=int(time_between_posts), id=feed.id)
             if time_units == 'weeks':
-                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], weeks=1, id=str(feed.id))
+                job = scheduler.add_job(update_feed, 'interval', args=[feed.id], weeks=int(time_between_posts), id=str(feed.id))
             log.debug("JOB ID: {} added".format(job.id))
 
             return (rss_feed_filename, preview_feed_filename, False)
