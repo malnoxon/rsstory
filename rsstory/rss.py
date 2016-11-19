@@ -133,11 +133,11 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
                     if len(i.contents) > 0:
                         ti = str(i.contents[0])
                     else:
-                        ti = "Unknown"
+                        ti = title
 
                     url_data.append((ln, ti))
                 except AttributeError:
-                    url_data.append((i, "Comic 1 at url {}".format(i)))
+                    url_data.append((i, title))
             log.info("Starting gen_pages()")
 
             #have to add delay maybe.
