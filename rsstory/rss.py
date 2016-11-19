@@ -18,15 +18,15 @@ from .models import (
         )
 
 log = logging.getLogger(__name__)
-def gen_pages(items, data_list, time_between, archive_url):
+def gen_pages(items, data_list, time_between, archive_url, user_id):
     #TODO: way to deal with changes to parsing engine!!!!!
     curr_time = datetime.datetime.now()
     index = 0
     while data_list:
         data = data_list.pop(0)
-        page = DBSession.query(Page).filter_by(id=index, archive_url=archive_url).first()
+        page = DBSession.query(Page).filter_by(user=user_id, page_url=data[0]).first()
         if not page:
-            page = Page(id=index, name=data[1], page_url=data[0], archive_url=archive_url, time_created=int(time.time()))
+            page = Page(name=data[1], page_url=data[0], archive_url=archive_url, time_created=int(time.time()), user=user_id)
             DBSession.add(page)
 
         items.append(PyRSS2Gen.RSSItem(
@@ -41,8 +41,9 @@ def gen_pages(items, data_list, time_between, archive_url):
     transaction.commit()
 
 def write_rss(feed, rss_data):
-    ''' Takes the given rss_data urls and page titles and writes to the page 
-    for the given feed object. rss_data is assumed to be ORDERED'''
+    ''' Takes the given rss_data urls and page titles and puts them into 
+    the feed. (The rss_data are what shows up right now in the rss reader)
+    rss_data is assumed to be ORDERED'''
     if feed.name == None or feed.name == "":
         feed.name = "RSStory: {}".format(feed.archive_url)
     description = "RSStory feed for {}".format(feed.archive_url)
@@ -53,9 +54,8 @@ def write_rss(feed, rss_data):
     index = 0
     while rss_data:
         data = rss_data.pop(0)
-        page = DBSession.query(Page).filter_by(id=index, name=data[1], page_url=data[0], archive_url=feed.archive_url).first()
+        page = DBSession.query(Page).filter_by(page_url=data[0], user=feed.user).first()
 
-        # import pdb; pdb.set_trace();
         rss_items.append(PyRSS2Gen.RSSItem(
             title = page.name,
             link = page.page_url,
@@ -126,7 +126,6 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             url_data = []
             links = scrape(archive_url, scraping_method)
             for i in links:
-                # import pdb; pdb.set_trace();
                 try:
                     ln = i.attrs['href']
                     ln = urllib.parse.urljoin(archive_url, ln)
@@ -141,9 +140,9 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             log.info("Starting gen_pages()")
 
             #have to add delay maybe.
-            gen_pages(rss_items, url_data[:], time_between, archive_url)
+            gen_pages(rss_items, url_data[:], time_between, archive_url, user_id)
             archive_id = SystemRandom().getrandbits(512)
-            most_recent_page = DBSession.query(Page).filter_by(archive_url=archive_url).first()
+            most_recent_page = DBSession.query(Page).filter_by(page_url=url_data[0][0], user=user_id).first()
             if most_recent_page:
                 feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id, most_recent_page=most_recent_page.id)
             else:

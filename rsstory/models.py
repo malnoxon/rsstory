@@ -4,6 +4,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Text,
+    UniqueConstraint,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,12 +35,14 @@ class Feed(Base):
 for each feed"""
 class Page(Base):
     __tablename__ = 'pages'
-    archive_url = Column(Text, primary_key=True)
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    archive_url = Column(Text)
     name = Column(Text)
-    page_url = Column(Text, nullable=False) # TODO: make unique?
+    page_url = Column(Text, nullable=False)
     description = Column(Text)
     time_created = Column(Text, nullable=False)
+    user = Column(ForeignKey('users.id'))
+    __table_args__ = (UniqueConstraint('user', 'page_url'),)
     
 
 class User(Base):
