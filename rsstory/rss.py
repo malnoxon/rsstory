@@ -1,4 +1,5 @@
 import datetime, PyRSS2Gen, sys
+from exception import ArchiveGenerationError
 from rsstory.scraping import *
 from rsstory.scheduler import scheduler
 import pyramid.threadlocal
@@ -54,6 +55,7 @@ def write_rss(feed, rss_data):
         data = rss_data.pop(0)
         page = DBSession.query(Page).filter_by(id=index, name=data[1], page_url=data[0], archive_url=feed.archive_url).first()
 
+        # import pdb; pdb.set_trace();
         rss_items.append(PyRSS2Gen.RSSItem(
             title = page.name,
             link = page.page_url,
@@ -124,14 +126,18 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             url_data = []
             links = scrape(archive_url)
             for i in links:
-                ln = i.attrs['href']
-                ln = urllib.parse.urljoin(archive_url, ln)
-                if len(i.contents) > 0:
-                    ti = str(i.contents[0])
-                else:
-                    ti = "Unknown"
+                # import pdb; pdb.set_trace();
+                try:
+                    ln = i.attrs['href']
+                    ln = urllib.parse.urljoin(archive_url, ln)
+                    if len(i.contents) > 0:
+                        ti = str(i.contents[0])
+                    else:
+                        ti = "Unknown"
 
-                url_data.append((ln, ti))
+                    url_data.append((ln, ti))
+                except AttributeError:
+                    url_data.append((i, "Comic 1 at url {}".format(i)))
             log.info("Starting gen_pages()")
 
             #have to add delay maybe.
@@ -140,6 +146,8 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
             most_recent_page = DBSession.query(Page).filter_by(archive_url=archive_url).first()
             if most_recent_page:
                 feed = Feed(id=str(archive_id), name=title, archive_url=archive_url, time_between_posts=time_between.total_seconds(), time_created=int(time.time()), user=user_id, most_recent_page=most_recent_page.id)
+            else:
+                raise ArchiveGenerationError('No "most_recent_page" exists')
             DBSession.add(feed)
             log.info("Transaction committed")
             rss_feed_filename = write_rss(feed, url_data[:1])
