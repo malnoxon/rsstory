@@ -25,7 +25,8 @@ $(document).ready(function() {
         url: $('#archive').val(),
         time: $('#time').val(),
         time_units: $('#time_units').val(),
-        captcha: $('#captcha').val()
+        captcha: $('#captcha').val(),
+        scraping_type: $('#scraping_type').val()
       }),
       contentType: 'application/json; charset=utf-8',
       success: function (data, status) {

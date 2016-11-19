@@ -219,7 +219,7 @@ def update_feed(request):
 def feed(request):
     if request.json_body['url'] == '':
         return {"rss": "Error"}
-    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['time_units'], request.json_body['title'], request.json_body['captcha'], request.authenticated_userid, request.remote_addr)
+    xml_feed, preview_page, invalid_input = rss.archive_to_rss(request.json_body['url'], request.json_body['time'], request.json_body['time_units'], request.json_body['title'], request.json_body['captcha'], request.authenticated_userid, request.remote_addr, request.json_body['scraping_type'])
     if invalid_input:
         return {"rss": "Error", "error_msg": "Error: A bad input value was entered. Be sure that the archive url is correct and that the time between posts is entered as a whole number of days (not as a decimal). If the values are actually correct, please leave a bug report at https://github.com/malnoxon/rsstory"}
     if xml_feed == False and preview_page == False:

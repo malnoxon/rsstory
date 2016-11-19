@@ -91,7 +91,7 @@ def write_preview_feed(rss_items, url, title, feed_id):
     f.close()
     return fname
 
-def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha_answer, user_id, ip):
+def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha_answer, user_id, ip, scraping_method):
     try:
         log.info("Beginning archive_to_rss()")
         key = ""
@@ -124,7 +124,7 @@ def archive_to_rss(archive_url, time_between_posts, time_units, title, recaptcha
 
             rss_items = []
             url_data = []
-            links = scrape(archive_url)
+            links = scrape(archive_url, scraping_method)
             for i in links:
                 # import pdb; pdb.set_trace();
                 try:

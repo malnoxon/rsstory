@@ -74,6 +74,21 @@
                 </select>
               </td>
             </tr>
+            <tr>
+              <td>
+                <b>Scraping Method:</b>
+              </td>
+              <td>
+              <select id="scraping_type">
+                <option value="automatic">automatic (recommended)</option>
+                <option value="page">single page</option>
+                <option value="next">next page/comic links</option>
+                <option value="monthly_sidebar">monthly sidebar</option>
+                <option value="wordpress">wordpress</option>
+                <option value="blogspot">blogspot</option>
+              </select>
+              </td>
+            </tr>
           </table>
           <div class="g-recaptcha" data-sitekey="6LcnlgsTAAAAAGmVA_COh_S6FDDtnEUJY9aL8Ulf"></div>
           <div tal:condition="not: logged_in">WARNING: If you create a feed while not logged in you will NOT be able to manage it later!</div>
