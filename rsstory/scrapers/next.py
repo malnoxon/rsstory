@@ -1,4 +1,5 @@
 import urllib3
+import urllib.parse
 from bs4 import BeautifulSoup
 import rsstory.scrapers.tools as tools
 import certifi
@@ -32,24 +33,23 @@ def scrape(url):
         links.sort(key=likelyhood_being_next_button)
         links.reverse()
         next_button = links[0]
-        # import pdb; pdb.set_trace();
         if likelyhood_being_next_button(next_button) == 0:
             break
         else:
-            if next_button['href'] in page_urls:
+            joined_url = urllib.parse.urljoin(url, next_button['href'])
+            if joined_url in page_urls:
                 break
-            url = next_button['href']
+            url = joined_url
             log.debug("Adding url {} to pages".format(url))
             page_links.append(next_button)
-            page_urls.add(next_button['href'])
+            page_urls.add(joined_url)
 
 
     return page_links
 
 
 def likelyhood_being_next_button(link):
-    # import pdb; pdb.set_trace();
-    keywords = ['next', '>', 'nav']
+    keywords = ['next', '>', 'nav', '&gt;', 'NEXT', 'Next']
     negative_keywords = ['http']
     likelyhood = 0
     # import pdb; pdb.set_trace();
