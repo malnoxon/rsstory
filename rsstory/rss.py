@@ -1,5 +1,5 @@
 import datetime, PyRSS2Gen, sys
-from exception import ArchiveGenerationError
+from rsstory.exception import ArchiveGenerationError
 from rsstory.scraping import *
 from rsstory.scheduler import scheduler
 import pyramid.threadlocal
