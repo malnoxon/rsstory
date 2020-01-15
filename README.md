@@ -3,7 +3,6 @@ RSStory
 
 **RSStory** is a tool to turn the archives of blogs and webcomics into new RSS feeds.
 
-*~~*Use now at [rsstory.com](http://rsstory.com)**~~
 **NOTE** **RSStory** is no longer hosted anywhere by me due to hosting costs.
 
 ### When would I use **RSStory**?
