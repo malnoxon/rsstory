@@ -3,7 +3,8 @@ RSStory
 
 **RSStory** is a tool to turn the archives of blogs and webcomics into new RSS feeds.
 
-**Use now at [rsstory.com](http://rsstory.com)**
+*~~*Use now at [rsstory.com](http://rsstory.com)**~~
+**NOTE** **RSStory** is no longer hosted anywhere by me due to hosting costs.
 
 ### When would I use **RSStory**?
 * If you've just discovered a new webcomic and want to read through the archives at a leisuly pace, **RSStory** can do that. 
@@ -13,7 +14,7 @@ RSStory
 
 ### Usage
 
-You may use **RSStory** now at [rsstory.com](http://rsstory.com)
+~~You may use **RSStory** now at [rsstory.com](http://rsstory.com)~~
 
 To use, simply fill in the 4 fields and add the feed to your RSS reader of choise.
 
@@ -39,5 +40,5 @@ Designed to parse the default format that wordpress uses for their archives.
 Designed to parse the default format that blogspot uses for their archives. 
 
 ### Problems
-* If you have a specific website you would like to use **RSStory** on but currently fails, please report it at [rsstory.com/archive_fails](http://rsstory.com/archive_fails) or comment on this [issue](https://github.com/malnoxon/rsstory/issues/8)
+* If you have a specific website you would like to use **RSStory** on but currently fails comment on this [issue](https://github.com/malnoxon/rsstory/issues/8)
 * If you encounter a different problem with **RSStory**, please create a github [issue](https://github.com/malnoxon/rsstory/issues) and I'll try to fix it
