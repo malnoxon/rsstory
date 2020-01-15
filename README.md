@@ -3,7 +3,7 @@ RSStory
 
 **RSStory** is a tool to turn the archives of blogs and webcomics into new RSS feeds.
 
-**NOTE** **RSStory** is no longer hosted anywhere by me due to hosting costs.
+**NOTE:** **RSStory** is no longer hosted anywhere by me due to hosting costs.
 
 ### When would I use **RSStory**?
 * If you've just discovered a new webcomic and want to read through the archives at a leisuly pace, **RSStory** can do that. 
